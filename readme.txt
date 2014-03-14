@@ -12,4 +12,3 @@ Assignment
 ----------
 https://wis.fit.vutbr.cz/FIT/st/cwk.php?title=IJA:Zad%E1n%ED_projektu&csid=548836&id=9362
 https://wis.fit.vutbr.cz/FIT/st/cwk.php?title=IJA:Pokyny_k_projektu&csid=548836&id=9362
-
