@@ -1,6 +1,7 @@
 package themaze.mobiles;
 
 import themaze.Maze;
+import themaze.objects.*;
 
 public class AbstractMobile {
 
@@ -62,6 +63,39 @@ public class AbstractMobile {
     public final boolean isAt (int x, int y)
     {
         return this.x == x && this.y == y;
+    }
+
+    public final boolean go() {
+
+        int tmp_x = this.x;
+        int tmp_y = this.y;
+
+        MazeObject tmp = null;
+
+        switch(this.direction)
+        {
+            case UP :
+                tmp =  maze.getObject(--tmp_x, tmp_y);
+                break;
+            case RIGHT:
+                tmp =  maze.getObject(tmp_x, ++tmp_y);
+                break;
+            case DOWN:
+                tmp =  maze.getObject(++tmp_x, tmp_y);
+                break;
+            case LEFT:
+                tmp =  maze.getObject(tmp_x, --tmp_y);
+                break;
+        }
+
+        if(tmp.isEnterable())
+        {
+            this.x = tmp_x;
+            this.y = tmp_y;
+            return true;
+        }
+
+        return false;
     }
 
 
