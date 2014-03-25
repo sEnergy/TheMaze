@@ -54,21 +54,26 @@ public class TheMaze
                     System.out.println(maze.toString());
                     break;
                 case Close:
-                    System.out.print("Game closed");
+                    System.out.println("Game closed");
                     return false;
                 case Left:
                     maze.getPlayer().turnLeft();
-                    System.out.print("You have turned left");
+                    System.out.println("You have turned left");
                     System.out.print(maze.toString());
                     break;
                 case Right:
                     maze.getPlayer().turnRight();
-                    System.out.print("You have turned right");
+                    System.out.println("You have turned right");
                     System.out.print(maze.toString());
                     break;
                 case Go:
                     if (!maze.getPlayer().go())
                         System.out.println("You can't go that way");
+                    if (maze.getPlayer().inFinish())
+                    {
+                        System.out.println("You have won!");
+                        return false;
+                    }
                     System.out.print(maze.toString());
                     break;
                 case Keys:

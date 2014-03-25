@@ -13,6 +13,11 @@ public class Player extends AbstractMobile
         super(maze, x, y);
     }
 
+    public boolean inFinish()
+    {
+        return maze.getObject(x, y) instanceof Finish;
+    }
+
     public boolean take() {
 
         int key_x = this.x;

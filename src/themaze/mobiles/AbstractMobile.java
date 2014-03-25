@@ -9,7 +9,7 @@ public class AbstractMobile {
     protected Directions direction;
     protected Maze maze = null;
 
-    protected enum Directions {UP, RIGHT, DOWN, LEFT}
+    public enum Directions {UP, RIGHT, DOWN, LEFT}
 
     public AbstractMobile (Maze maze, int x, int y) {
         this.maze = maze;
@@ -18,7 +18,18 @@ public class AbstractMobile {
         this.setDirection();
     }
 
-    protected final void setDirection () { this.direction = Directions.UP; }
+    protected final void setDirection()
+    {
+        if (maze.getObject(x - 1, y) == null)
+            direction = Directions.UP;
+        else if (maze.getObject(x+1, y) == null)
+            direction = Directions.DOWN;
+        else if (maze.getObject(x, y+1) == null)
+            direction = Directions.RIGHT;
+        else
+            direction = Directions.LEFT;
+    }
+
     public final char getChar()
     {
         switch(this.direction)
