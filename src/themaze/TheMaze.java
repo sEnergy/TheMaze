@@ -35,7 +35,7 @@ public class TheMaze
         } catch (Exception e) { e.printStackTrace(); }
     }
 
-    private static boolean handleCommand(String str)
+    public static boolean handleCommand(String str)
     {
         try
         {
