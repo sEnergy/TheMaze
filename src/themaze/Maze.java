@@ -11,7 +11,7 @@ public class Maze
 {
     private MazeObject[][] matrix;
 
-    private Player player = new Player();
+    private Player player = null;
     public Player getPlayer() { return player; }
 
     public Maze(String name) throws IOException
@@ -37,6 +37,8 @@ public class Maze
                     matrix[x][y] = createObject(data[y]);
             }
         }
+
+        player = new Player(this, 1, 8);
     }
 
     private MazeObject createObject(String type) throws IllegalArgumentException
@@ -78,5 +80,13 @@ public class Maze
             str.append('\n');
         }
         return str.toString();
+    }
+
+    public MazeObject getObject (int x, int y) {
+        return matrix[x][y];
+    }
+
+    public void eraseKey (int x, int y) {
+         matrix[x][y] = null;
     }
 }
