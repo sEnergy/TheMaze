@@ -6,6 +6,7 @@ import themaze.objects.*;
 public class Player extends AbstractMobile
 {
     private int keys = 0;
+    public final int getKeys() { return keys; }
 
     public Player(Maze maze, int x, int y)
     {
@@ -37,7 +38,7 @@ public class Player extends AbstractMobile
 
         if(tmp instanceof Key)
         {
-            maze.eraseKey(x, y);
+            maze.eraseKey(key_x, key_y);
             keys++;
             return true;
         }

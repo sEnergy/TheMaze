@@ -9,7 +9,7 @@ public class AbstractMobile {
     protected Directions direction;
     protected Maze maze = null;
 
-    protected enum Directions {UP, RIGHT, DOWN, LEFT};
+    protected enum Directions {UP, RIGHT, DOWN, LEFT}
 
     public AbstractMobile (Maze maze, int x, int y) {
         this.maze = maze;
@@ -18,11 +18,24 @@ public class AbstractMobile {
         this.setDirection();
     }
 
-    protected final void setDirection () { // nutno volat až po přidání bludiště
-        this.direction = Directions.UP;         // udělat podle bludiště
+    protected final void setDirection () { this.direction = Directions.UP; }
+    public final char getChar()
+    {
+        switch(this.direction)
+        {
+            case UP :
+                return '8';
+            case RIGHT:
+                return '6';
+            case DOWN:
+                return '2';
+            case LEFT:
+                return '4';
+        }
+        return 0;
     }
 
-    protected final void turnRight() {
+    public final void turnRight() {
 
         switch(this.direction)
         {
@@ -41,7 +54,7 @@ public class AbstractMobile {
         }
     }
 
-    protected final void turnLeft() {
+    public final void turnLeft() {
 
         switch(this.direction)
         {
@@ -88,7 +101,7 @@ public class AbstractMobile {
                 break;
         }
 
-        if(tmp.isEnterable())
+        if(tmp == null || tmp.isEnterable())
         {
             this.x = tmp_x;
             this.y = tmp_y;

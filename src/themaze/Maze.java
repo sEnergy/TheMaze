@@ -2,10 +2,14 @@ package themaze;
 
 import themaze.mobiles.Player;
 import themaze.objects.*;
+import themaze.types.Position;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 
 public class Maze
 {
@@ -13,6 +17,8 @@ public class Maze
 
     private Player player = null;
     public Player getPlayer() { return player; }
+
+    private List<Position> starts = new ArrayList<>();
 
     public Maze(String name) throws IOException
     {
@@ -34,11 +40,18 @@ public class Maze
                     throw new IOException("Invalid maze format");
 
                 for (int y = 0; y < columns; y++)
-                    matrix[x][y] = createObject(data[y]);
+                {
+                    MazeObject obj = createObject(data[y]);
+                    if (obj instanceof Start)
+                        starts.add(new Position(x, y));
+                    else
+                        matrix[x][y] = obj;
+                }
             }
         }
 
-        player = new Player(this, 1, 8);
+        Position start = starts.get(new Random().nextInt(starts.size()));
+        player = new Player(this, start.x, start.y);
     }
 
     private MazeObject createObject(String type) throws IllegalArgumentException
@@ -69,8 +82,8 @@ public class Maze
         {
             for (int y = 0; y < matrix[x].length; y++)
             {
-                if (player.isAt(0, 0))
-                    str.append('P');
+                if (player.isAt(x, y))
+                    str.append(player.getChar());
                 else if (matrix[x][y] != null)
                     str.append(matrix[x][y].toChar());
                 else
