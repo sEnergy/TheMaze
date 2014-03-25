@@ -14,11 +14,15 @@
 
 package themaze;
 
-public class TheMaze {
-
-    public static void main(String[] args) {
-
-        System.out.println("Tohle bude kurva hustý!");
-
+public class TheMaze
+{
+    public static void main(String[] args)
+    {
+        try
+        {
+            Maze maze = new Maze("mazejakprase");
+            System.out.println(maze);
+        }
+        catch (Exception e) { e.printStackTrace(); }
     }
 }

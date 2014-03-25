@@ -5,7 +5,7 @@ TheMaze
 
 Team members
 ------------
-Marcel Fiali (xfiala47@stud.fit.vutbr.cz)
+Marcel Fiala (xfiala47@stud.fit.vutbr.cz)
 Jaroslav Kubik (xkubik25@stud.fit.vutbr.cz)
 
 Assignment
