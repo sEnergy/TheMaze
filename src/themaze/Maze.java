@@ -87,7 +87,7 @@ public class Maze
                 else if (matrix[x][y] != null)
                     str.append(matrix[x][y].toChar());
                 else
-                    str.append('-');
+                    str.append(' ');
                 str.append(' ');
             }
             str.append('\n');
