@@ -46,48 +46,49 @@ public class TheMaze
             {
                 case Game:
                     if (maze != null)
-                        throw new Exception("Game already started");
+                        throw new Exception("Game is already started!");
                     maze = new Maze(str.substring(4).trim());
-                    System.out.println("Game started");
+                    System.out.println("Game started.");
                     break;
                 case Show:
                     System.out.println(maze.toString());
                     break;
                 case Close:
-                    System.out.println("Game closed");
+                    System.out.println("Game closed.");
                     return false;
                 case Left:
                     maze.getPlayer().turnLeft();
-                    System.out.println("You have turned left");
-                    System.out.print(maze.toString());
+                    System.out.println("You have turned left.");
                     break;
                 case Right:
                     maze.getPlayer().turnRight();
-                    System.out.println("You have turned right");
-                    System.out.print(maze.toString());
+                    System.out.println("You have turned right.");
                     break;
                 case Go:
                     if (!maze.getPlayer().go())
-                        System.out.println("You can't go that way");
+                        System.out.println("You can't go that way.");
+                    else
+                    	System.out.println("You made step forward!");
                     if (maze.getPlayer().inFinish())
                     {
                         System.out.println("You have won!");
                         return false;
                     }
-                    System.out.print(maze.toString());
                     break;
                 case Keys:
                     System.out.printf("You have %d key(s)\n", maze.getPlayer().getKeys());
                     break;
                 case Take:
                     if (!maze.getPlayer().take())
-                        System.out.println("No key found");
-                    System.out.print(maze.toString());
+                        System.out.println("There is no key in front of you.");
+                    else
+                    	System.out.println("You picked up a key.");
                     break;
                 case Open:
                     if (!maze.getPlayer().open())
-                        System.out.println("No gate to open");
-                    System.out.print(maze.toString());
+                        System.out.println("Can't open gate. (no gate or no key)");
+                    else
+                    	System.out.println("You opened the gate.");
                     break;
             }
         }

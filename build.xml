@@ -18,7 +18,12 @@
     </java>
 </target>
 
-<target name="test" depends="compile">
+<target name="pre-test">
+	<mkdir dir="build/classes/examples"/>
+	<copy file="examples/test.maz" tofile="build/classes/examples/test.maz"/>
+</target>
+
+<target name="test-run" depends="pre-test">
         <exec executable="java" dir="build/classes/" >
             <arg value="-classpath" />
             <arg value=".:../../lib/junit-4.10.jar" />
@@ -26,6 +31,13 @@
             <arg value="themaze.TestClass" />
         </exec>
 </target>
+
+<target name="post-test">
+	<sleep seconds="3"/>
+	<delete dir="build/classes/examples"/>
+</target>
+
+<target name="test" depends="compile,pre-test,test-run,post-test"/>
 
 <target name="clean">
 	<delete includeemptydirs="true">

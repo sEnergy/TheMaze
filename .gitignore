@@ -3,3 +3,6 @@ dest-client
 dest-server
 nbproject
 manifest.mf
+.classpath
+.project
+.settings/*
