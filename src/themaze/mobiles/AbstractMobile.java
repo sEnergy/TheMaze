@@ -89,7 +89,7 @@ public class AbstractMobile {
         return this.x == x && this.y == y;
     }
 
-    public final boolean go() {
+    public final boolean step() {
 
         int tmp_x = this.x;
         int tmp_y = this.y;

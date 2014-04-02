@@ -3,7 +3,6 @@ package themaze;
 
 import org.junit.Before;
 import org.junit.Test;
-import static org.junit.Assert.*;
 
 public class TestClass {
 
@@ -20,9 +19,9 @@ public class TestClass {
     	
     	System.out.println("");
     	
-    	System.out.println("Sending command: 'go' (should not work-game not started)");
+    	System.out.println("Sending command: 'step' (should not work-game not started)");
     	System.out.printf("Game response: ");
-    	themaze.TheMaze.handleCommand("go");
+    	themaze.TheMaze.handleCommand("step");
     	System.out.printf("\n");
     	
     	System.out.println("Sending command: 'game test' (should open test maze)");
@@ -36,9 +35,9 @@ public class TestClass {
     	
     	System.out.println("Now the real fun begins - let's play.\n");
     	
-    	System.out.println("Sending command: 'go' (should move player one step forward)");
+    	System.out.println("Sending command: 'step' (should move player one step forward)");
     	System.out.printf("Game response: ");
-    	themaze.TheMaze.handleCommand("go");
+    	themaze.TheMaze.handleCommand("step");
     	System.out.printf("\n");
     	themaze.TheMaze.handleCommand("show");
     	
@@ -54,15 +53,15 @@ public class TestClass {
     	System.out.printf("\n");
     	themaze.TheMaze.handleCommand("show");
     	
-    	System.out.println("Sending command: 'go' (comming back to spawn)");
+    	System.out.println("Sending command: 'step' (comming back to spawn)");
     	System.out.printf("Game response: ");
-    	themaze.TheMaze.handleCommand("go");
+    	themaze.TheMaze.handleCommand("step");
     	System.out.printf("\n");
     	themaze.TheMaze.handleCommand("show");
     	
-    	System.out.println("Sending command: 'go' (player should collide with wall)");
+    	System.out.println("Sending command: 'step' (player should collide with wall)");
     	System.out.printf("Game response: ");
-    	themaze.TheMaze.handleCommand("go");
+    	themaze.TheMaze.handleCommand("step");
     	System.out.printf("\n");
     	themaze.TheMaze.handleCommand("show");
     	
@@ -82,21 +81,21 @@ public class TestClass {
     	themaze.TheMaze.handleCommand("take");
     	themaze.TheMaze.handleCommand("show");
     	
-    	System.out.println("Sending command: 'go'");
+    	System.out.println("Sending command: 'step'");
     	System.out.printf("Game response: ");
-    	themaze.TheMaze.handleCommand("go");
+    	themaze.TheMaze.handleCommand("step");
     	System.out.printf("\n");
     	themaze.TheMaze.handleCommand("show");
     	
-    	System.out.println("Sending command: 'go'");
+    	System.out.println("Sending command: 'step'");
     	System.out.printf("Game response: ");
-    	themaze.TheMaze.handleCommand("go");
+    	themaze.TheMaze.handleCommand("step");
     	System.out.printf("\n");
     	themaze.TheMaze.handleCommand("show");
     	
-    	System.out.println("Sending command: 'go'");
+    	System.out.println("Sending command: 'step'");
     	System.out.printf("Game response: ");
-    	themaze.TheMaze.handleCommand("go");
+    	themaze.TheMaze.handleCommand("step");
     	System.out.printf("\n");
     	themaze.TheMaze.handleCommand("show");
     	
@@ -106,9 +105,9 @@ public class TestClass {
     	System.out.printf("\n");
     	themaze.TheMaze.handleCommand("show");
     	
-    	System.out.println("Sending command: 'go' (try to go through closed gate)");
+    	System.out.println("Sending command: 'step' (try to step through closed gate)");
     	System.out.printf("Game response: ");
-    	themaze.TheMaze.handleCommand("go");
+    	themaze.TheMaze.handleCommand("step");
     	System.out.printf("\n");
     	themaze.TheMaze.handleCommand("show");
     	
@@ -146,15 +145,15 @@ public class TestClass {
     	System.out.printf("\n");
     	themaze.TheMaze.handleCommand("show");
     	
-    	System.out.println("Sending command: 'go' (try to go through opened gate)");
+    	System.out.println("Sending command: 'step' (try to step through opened gate)");
     	System.out.printf("Game response: ");
-    	themaze.TheMaze.handleCommand("go");
+    	themaze.TheMaze.handleCommand("step");
     	System.out.printf("\n");
     	themaze.TheMaze.handleCommand("show");
     	
-    	System.out.println("Sending command: 'go' (to the finish)");
+    	System.out.println("Sending command: 'step' (to the finish)");
     	System.out.printf("Game response: ");
-    	themaze.TheMaze.handleCommand("go");
+    	themaze.TheMaze.handleCommand("step");
     	System.out.printf("\n");
     	themaze.TheMaze.handleCommand("show");
     	

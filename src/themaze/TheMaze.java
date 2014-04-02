@@ -64,9 +64,9 @@ public class TheMaze
                     maze.getPlayer().turnRight();
                     System.out.println("You have turned right.");
                     break;
-                case Go:
-                    if (!maze.getPlayer().go())
-                        System.out.println("You can't go that way.");
+                case Step:
+                    if (!maze.getPlayer().step())
+                        System.out.println("You can't step that way.");
                     else
                     	System.out.println("You made step forward!");
                     if (maze.getPlayer().inFinish())
@@ -108,8 +108,8 @@ public class TheMaze
                 return Command.Left;
             case "right":
                 return Command.Right;
-            case "go":
-                return Command.Go;
+            case "step":
+                return Command.Step;
             case "keys":
                 return Command.Keys;
             case "take":
@@ -124,6 +124,6 @@ public class TheMaze
 
     private enum Command
     {
-        Game, Show, Close, Left, Right, Go, Keys, Take, Open
+        Game, Show, Close, Left, Right, Step, Keys, Take, Open
     }
 }
