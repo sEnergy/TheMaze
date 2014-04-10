@@ -40,7 +40,7 @@ public class TheMaze
         try
         {
             Command cmd = parseCommand(str);
-            if (maze == null && cmd != Command.Game)
+            if (maze == null && cmd != Command.Game && cmd != Command.Close)
                 throw new Exception("You have to start a game first");
             switch (cmd)
             {

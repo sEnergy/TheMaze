@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<project name="themaze" default="default" basedir=".">
+<project name="themaze" basedir=".">
 
 <target name="init">
     <mkdir dir="build/classes"/>
@@ -8,6 +8,7 @@
 
 <target name="compile" depends="init">
 	<javac srcdir="src" classpath="lib/junit-4.10.jar" destdir="build/classes" includeantruntime="false"/>
+    <javadoc sourcepath="src" destdir="doc"/>
 </target>
 
 <target name="run" depends="compile">

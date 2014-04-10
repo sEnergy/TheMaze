@@ -95,11 +95,6 @@ public class Maze
         return str.toString();
     }
 
-    public MazeObject getObject (int x, int y) {
-        return matrix[x][y];
-    }
-
-    public void eraseKey (int x, int y) {
-         matrix[x][y] = null;
-    }
+    public MazeObject getObject (int x, int y) { return matrix[x][y]; }
+    public void deleteObject(int x, int y) { matrix[x][y] = null; }
 }

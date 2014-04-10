@@ -43,7 +43,7 @@ public class Player extends AbstractMobile
 
         if(tmp instanceof Key)
         {
-            maze.eraseKey(key_x, key_y);
+            maze.deleteObject(key_x, key_y);
             keys++;
             return true;
         }
