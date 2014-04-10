@@ -9,7 +9,6 @@ public class TestClass {
     @Before
     public void setUp() {
         System.out.println("\n\nTest beginning:");
-        System.out.println("(The GO command already implemented - makes one step forward)\n");
         System.out.println("The player is represended by number 2/4/6/8 accroding to his direction");
         System.out.println("(corresponding with direction keys on NUM 2/4/6/8)");
     }
