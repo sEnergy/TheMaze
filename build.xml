@@ -8,7 +8,11 @@
 
 <target name="compile" depends="init">
 	<javac srcdir="src" classpath="lib/junit-4.10.jar" destdir="build/classes" includeantruntime="false"/>
-    <javadoc sourcepath="src" destdir="doc"/>
+    <javadoc destdir="doc">
+        <fileset dir="src">
+            <exclude name="themaze/TestClass.java"/>
+        </fileset>
+    </javadoc>
 </target>
 
 <target name="run" depends="compile">
