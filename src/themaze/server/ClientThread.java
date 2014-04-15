@@ -67,7 +67,7 @@ public class ClientThread extends Thread
                 case Game:
                     if (game != null)
                         return "You are already in a game!";
-                    game = Game.startGame(this, cmd.getData(), 2);
+                    game = Game.startGame(this, cmd.getData(), 1);
                     return "Game created.";
                 case Join:
                     game = Game.joinGame(this);

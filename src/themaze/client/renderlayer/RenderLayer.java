@@ -74,7 +74,7 @@ public class RenderLayer extends Canvas implements Runnable {
 				
 						switch (dis.readByte())
 						{
-							case 0:
+							case 1:
 								x = dis.readByte();
 								y = dis.readByte();
 								Dimension newDim = new Dimension (x*20,y*20);
@@ -83,9 +83,9 @@ public class RenderLayer extends Canvas implements Runnable {
 								gs.setX(x);
 								gs.setY(y);
 								break;
-							case 1:
-								byte[] input = null;
-								dis.read(input, 0, x*y);
+							case 2:
+								byte[] input = new byte[x*y];
+                                dis.read(input, 0, x*y);
 								this.render(gs, input);
 						}
 						
