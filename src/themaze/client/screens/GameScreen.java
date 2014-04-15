@@ -42,11 +42,13 @@ public class GameScreen extends AbstractScreen {
 		g.drawImage(pl1, 100, 100, layer);
 		g.drawImage(dir_up, 100, 100, layer);
 		
-		for (int x = 0; x < xSize; ++x)
+		System.out.println("okokoko");
+		
+		for (int x = 0; x < ySize; ++x)
 		{
-			for (int y = 0; y < ySize; ++y)
+			for (int y = 0; y < xSize; ++y)
 			{
-				switch(input[x+y*5])
+				switch(input[x+y*ySize])
 				{
 					case 0:
 						g.drawImage(floor, x*20, y*20, layer);

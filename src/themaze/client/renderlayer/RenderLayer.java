@@ -3,6 +3,7 @@ package themaze.client.renderlayer;
 import java.awt.Canvas;
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.Insets;
 import java.awt.image.BufferStrategy;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -50,7 +51,7 @@ public class RenderLayer extends Canvas implements Runnable {
 			dos = new DataOutputStream(socket.getOutputStream());
 			dis = new DataInputStream(socket.getInputStream());
 			dos.writeUTF("game");
-			dos.writeUTF("test");
+			dos.writeUTF("small");
 			dos.flush();
 		} catch (UnknownHostException e1) {
 			// TODO Auto-generated catch block
@@ -71,6 +72,7 @@ public class RenderLayer extends Canvas implements Runnable {
 				
 				while (true) 
 				{	
+					
 					try {
 				
 						switch (dis.readByte())
@@ -78,15 +80,20 @@ public class RenderLayer extends Canvas implements Runnable {
 							case 1:
 								x = dis.readByte();
 								y = dis.readByte();
-								Dimension newDim = new Dimension (x*20,y*20);
-								this.setSize(new Dimension (newDim));
-								this.frame.setSize(new Dimension (newDim));
+								
+								Insets insets = this.frame.getInsets();
+								
+								
+								this.frame.setSize(new Dimension (new Dimension (y*20+insets.left + insets.right,x*20+insets.top + insets.bottom)));					
+								
+								this.setSize(new Dimension (new Dimension (y*20,x*20)));
 								gs.setX(x);
 								gs.setY(y);
 								break;
 							case 2:
 								byte[] input = new byte[x*y];
                                 dis.read(input, 0, x*y);
+								this.render(gs, input);
 								this.render(gs, input);
 						}
 						
@@ -95,6 +102,11 @@ public class RenderLayer extends Canvas implements Runnable {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
+					
+					
+					
+
+					
 					fps++;
 
 					

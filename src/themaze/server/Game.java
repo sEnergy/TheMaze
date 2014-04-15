@@ -139,7 +139,7 @@ public class Game
                     b = m.toByte();
                 else if (maze[x][y] != null)
                     b = maze[x][y].toByte();
-                data[x + y * maze.length] = b;
+                data[y + x * maze[x].length] = b;
             }
         return data;
     }
