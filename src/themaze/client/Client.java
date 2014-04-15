@@ -1,35 +1,32 @@
 package themaze.client;
 
-import java.io.*;
-import java.net.Socket;
+import java.awt.BorderLayout;
 
-public class Client
-{
-    public static void main(String[] args)
-    {
-        try
-        {
-            Socket socket = new Socket("localhost", 50000);
-            PrintWriter send = new PrintWriter(socket.getOutputStream(), true);
-            BufferedReader console = new BufferedReader(new InputStreamReader(System.in));
+import javax.swing.JFrame;
 
-            final BufferedReader recv = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-            new Thread()
-            {
-                public void run()
-                {
-                    try
-                    {
-                        String line;
-                        while ((line = recv.readLine()) != null)
-                            System.out.println(line);
-                    }
-                    catch (IOException e){}
-                }
-            }.start();
+import themaze.client.renderlayer.RenderLayer;
 
-            while (!socket.isClosed())
-                send.println(console.readLine());
-        } catch (Exception e) { e.printStackTrace(); }
-    }
+public class Client extends JFrame {
+
+	private static final long serialVersionUID = 4704860925089425366L;
+	public static final String GAME_NAME = "The Maze - alfa version";
+
+	public static void main(String[] args) {
+		Client  core = new Client();
+		core.init();
+	}
+	
+	private void init () {
+		RenderLayer layer = new RenderLayer(300, 300, this);
+		this.add(layer);
+		this.pack();
+		
+		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		this.setLayout(new BorderLayout());
+		this.setVisible(true);
+		this.setTitle(GAME_NAME);
+		
+		layer.start();
+	}
+
 }
