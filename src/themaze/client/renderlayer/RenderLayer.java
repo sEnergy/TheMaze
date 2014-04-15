@@ -67,6 +67,7 @@ public class RenderLayer extends Canvas implements Runnable {
 			if (true) // fake game choose
 			{
 				GameScreen gs  = new GameScreen(this, 3);
+				this.render(gs);
 				
 				while (true) 
 				{	
@@ -117,6 +118,7 @@ public class RenderLayer extends Canvas implements Runnable {
 		
 		if (buffer == null)
 		{
+			System.out.println("Je to v piči");
 			this.createBufferStrategy(3);
 			return;
 		}
@@ -124,6 +126,26 @@ public class RenderLayer extends Canvas implements Runnable {
 		{
 			Graphics g = buffer.getDrawGraphics();
 			as.render(g, input);
+			g.dispose();
+			
+			buffer.show();
+		}
+	}
+	
+private void render (AbstractScreen as) {
+		
+		BufferStrategy buffer = this.getBufferStrategy();
+		
+		if (buffer == null)
+		{
+			System.out.println("Je to v piči - ok");
+			this.createBufferStrategy(3);
+			return;
+		}
+		else
+		{
+			Graphics g = buffer.getDrawGraphics();
+			g.fillOval(x, y, y, x);
 			g.dispose();
 			
 			buffer.show();
