@@ -36,20 +36,12 @@ public class Player extends Mobile
         return false;
     }
 
-    public final char getChar()
+    public byte toByte()
     {
-        switch(this.direction)
-        {
-            case UP :
-                return '8';
-            case RIGHT:
-                return '6';
-            case DOWN:
-                return '2';
-            case LEFT:
-                return '4';
-        }
-        return 0;
+        byte b = (byte) (10 + direction.ordinal());
+        if (game.getObject(position) instanceof Gate)
+            b += 4;
+        return b;
     }
 
     @Override

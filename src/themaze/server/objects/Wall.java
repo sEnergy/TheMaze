@@ -3,7 +3,7 @@ package themaze.server.objects;
 public class Wall extends MazeObject
 {
     @Override
-    public char toChar() { return 'W'; }
+    public byte toByte() { return 1; }
 
     @Override
     public boolean isEnterable() {

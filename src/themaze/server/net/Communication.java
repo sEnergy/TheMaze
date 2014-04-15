@@ -50,6 +50,16 @@ public class Communication
         }
     }
 
+    public void sendData(int cmd, byte[] data) throws IOException
+    {
+        synchronized (output)
+        {
+            output.writeByte(cmd);
+            output.write(data);
+            output.flush();
+        }
+    }
+
     public void close() throws IOException
     {
         socket.close();

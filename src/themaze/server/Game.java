@@ -99,7 +99,7 @@ public class Game
 
                 if (players < 1)
                     for (Map.Entry<Mobile, ClientThread> entry : mobiles.entrySet())
-                        entry.getValue().gameStarted(entry.getKey(), toString());
+                        entry.getValue().gameStarted(entry.getKey(), toBytes());
             }
         }
     }
@@ -127,33 +127,28 @@ public class Game
         }
     }
 
-    @Override
-    public String toString()
+    private byte[] toBytes()
     {
-        StringBuilder str = new StringBuilder();
+        byte[] data = new byte[maze.length * maze[0].length];
         for (int x = 0; x < maze.length; x++)
-        {
             for (int y = 0; y < maze[x].length; y++)
             {
-                char c = picovolestejnetosmazu(x,y);
-                if (c != '-')
-                    str.append(c);
+                byte b = 0;
+                Mobile m = getMobile(x, y);
+                if (m != null)
+                    b = m.toByte();
                 else if (maze[x][y] != null)
-                    str.append(maze[x][y].toChar());
-                else
-                    str.append(' ');
-                str.append(' ');
+                    b = maze[x][y].toByte();
+                data[x + y * maze.length] = b;
             }
-            str.append('\n');
-        }
-        return str.toString();
+        return data;
     }
 
-    private char picovolestejnetosmazu(int x, int y)
+    private Mobile getMobile(int x, int y)
     {
         for (Mobile m : mobiles.keySet())
-            if (m instanceof Player && m.getPosition().x == x && m.getPosition().y == y)
-                return ((Player)m).getChar();
-        return '-';
+            if (m.getPosition().x == x && m.getPosition().y == y)
+                return m;
+        return null;
     }
 }

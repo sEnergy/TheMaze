@@ -2,6 +2,6 @@ package themaze.server.objects;
 
 public abstract class MazeObject
 {
-    public abstract char toChar();
+    public abstract byte toByte();
     public abstract boolean isEnterable();
 }

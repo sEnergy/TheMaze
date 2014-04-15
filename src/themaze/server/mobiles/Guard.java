@@ -9,4 +9,10 @@ public class Guard extends Mobile
     {
         super(game, start);
     }
+
+    @Override
+    public byte toByte()
+    {
+        return 0;
+    }
 }

@@ -42,4 +42,6 @@ public abstract class Mobile
         }
         return false;
     }
+
+    public abstract byte toByte();
 }

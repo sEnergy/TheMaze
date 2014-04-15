@@ -38,10 +38,10 @@ public class ClientThread extends Thread
         catch (IOException e) { System.out.print(e.getMessage()); }
     }
 
-    public void gameStarted(Mobile player, String str) throws IOException
+    public void gameStarted(Mobile player, byte[] data) throws IOException
     {
         synchronized (comm) { this.player = (Player)player; }
-        comm.sendString(2, str);
+        comm.sendData(2, data);
     }
 
     public void gameFinished(boolean winner) throws IOException

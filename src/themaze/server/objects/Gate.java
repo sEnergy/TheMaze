@@ -5,7 +5,7 @@ public class Gate extends MazeObject
     private boolean open = false;
 
     @Override
-    public char toChar() { return open ? 'O' : 'G'; }
+    public byte toByte() { return (byte) (open ? 3 : 2); }
 
     public boolean open() { return !open && (open = true); }
 

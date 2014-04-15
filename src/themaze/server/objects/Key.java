@@ -5,7 +5,7 @@ public class Key extends MazeObject
     private boolean taken = false;
 
     @Override
-    public char toChar() { return taken ? ' ' : 'K'; }
+    public byte toByte() { return (byte) (taken ? 0 : 4); }
 
     public boolean take() { return !taken && (taken = true); }
 
