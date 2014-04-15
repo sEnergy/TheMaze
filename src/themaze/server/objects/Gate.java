@@ -1,4 +1,4 @@
-package themaze.objects;
+package themaze.server.objects;
 
 public class Gate extends MazeObject
 {
@@ -7,9 +7,7 @@ public class Gate extends MazeObject
     @Override
     public char toChar() { return open ? 'O' : 'G'; }
 
-    public boolean open() {
-        return open = true;
-    }
+    public boolean open() { return !open && (open = true); }
 
     @Override
     public boolean isEnterable() {

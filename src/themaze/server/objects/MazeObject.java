@@ -1,4 +1,4 @@
-package themaze.objects;
+package themaze.server.objects;
 
 public abstract class MazeObject
 {
