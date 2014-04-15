@@ -4,24 +4,29 @@ import java.io.IOException;
 
 public class Command
 {
-    public enum CommandType { Game, Join, Show, Close, Left, Right, Step, Keys, Take, Open }
+    public enum CommandType { Game, Join, Close, Show, Left, Right, Step, Keys, Take, Open, Go, Invalid }
 
     public final CommandType type;
+    private String data;
 
-    public Command(CommandType type) {this.type = type;}
     public Command(String str) throws IOException
     {
         for (CommandType cmd : CommandType.values())
             if (cmd.name().equalsIgnoreCase(str))
             {
                 this.type = cmd;
-                break;
+                return;
             }
-        throw new IOException("Invalid argument");
+        this.type = CommandType.Invalid;
     }
 
-    public void addData(Object obj)
+    public void setData(String data)
     {
+        this.data = data;
+    }
 
+    public String getData()
+    {
+        return data;
     }
 }

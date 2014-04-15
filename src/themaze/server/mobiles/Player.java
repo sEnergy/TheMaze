@@ -4,6 +4,8 @@ import themaze.server.Game;
 import themaze.server.objects.*;
 import themaze.server.types.*;
 
+import java.io.IOException;
+
 public class Player extends Mobile
 {
     private int keys;
@@ -51,7 +53,7 @@ public class Player extends Mobile
     }
 
     @Override
-    public boolean step()
+    public boolean step() throws IOException
     {
         if (super.step())
         {

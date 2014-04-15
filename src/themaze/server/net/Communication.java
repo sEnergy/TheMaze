@@ -23,12 +23,35 @@ public class Communication
         synchronized (input)
         {
             Command cmd = new Command(input.readUTF());
+            if (cmd.type.ordinal() < Command.CommandType.Show.ordinal())
+                cmd.setData(input.readUTF());
             return cmd;
         }
     }
 
-    public void send(String cmd)
+    public void sendBytes(int cmd, int ... bytes) throws IOException
     {
+        synchronized (output)
+        {
+            output.writeByte(cmd);
+            for (int i : bytes)
+                output.writeByte(i);
+            output.flush();
+        }
+    }
 
+    public void sendString(int cmd, String str) throws IOException
+    {
+        synchronized (output)
+        {
+            output.writeByte(cmd);
+            output.writeUTF(str);
+            output.flush();
+        }
+    }
+
+    public void close() throws IOException
+    {
+        socket.close();
     }
 }

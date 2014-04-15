@@ -4,6 +4,8 @@ import themaze.server.Game;
 import themaze.server.objects.MazeObject;
 import themaze.server.types.*;
 
+import java.io.IOException;
+
 public abstract class Mobile
 {
     protected Game game;
@@ -29,7 +31,7 @@ public abstract class Mobile
         direction = Direction.values()[i % Direction.values().length];
     }
 
-    public boolean step()
+    public boolean step() throws IOException
     {
         Position newPos = position.add(direction);
         MazeObject obj = game.getObject(newPos);

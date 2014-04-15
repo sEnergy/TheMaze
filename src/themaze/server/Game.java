@@ -21,7 +21,7 @@ public class Game
         }
     }
 
-    public static Game joinGame(ClientThread thread)
+    public static Game joinGame(ClientThread thread) throws IOException
     {
         synchronized (games)
         {
@@ -85,9 +85,8 @@ public class Game
         throw new IllegalArgumentException("Invalid maze object");
     }
 
-    private Player join(ClientThread thread)
+    private void join(ClientThread thread) throws IOException
     {
-        Player player = null;
         synchronized (maze)
         {
             if (players > 0)
@@ -96,13 +95,13 @@ public class Game
                 Position start = starts.get(new Random().nextInt(starts.size()));
                 starts.remove(start);
                 mobiles.put(new Player(this, start), thread);
+                thread.gameJoined(maze.length, maze[0].length);
 
                 if (players < 1)
                     for (Map.Entry<Mobile, ClientThread> entry : mobiles.entrySet())
-                        entry.getValue().gameStarted(entry.getKey());
+                        entry.getValue().gameStarted(entry.getKey(), toString());
             }
         }
-        return player;
     }
 
     public void leave(Player player)
@@ -117,7 +116,7 @@ public class Game
 
     public MazeObject getObject(Position position) { return maze[position.x][position.y]; }
 
-    public void onFinish(Player player)
+    public void onFinish(Player player) throws IOException
     {
         synchronized (maze)
         {

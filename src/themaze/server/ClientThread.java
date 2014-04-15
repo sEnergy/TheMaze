@@ -1,83 +1,79 @@
 package themaze.server;
 
 import themaze.server.mobiles.*;
+import themaze.server.net.Command;
+import themaze.server.net.Communication;
 
 import java.io.*;
 import java.net.Socket;
 
+import static themaze.server.net.Command.CommandType;
+
 public class ClientThread extends Thread
 {
-    private final Socket socket;
     private Game game;
     private Player player;
-    private PrintWriter writer;
+    private final Communication comm;
 
-    public ClientThread(Socket socket) { this.socket = socket; }
+    public ClientThread(Socket socket) throws IOException
+    {
+        this.comm = new Communication(socket);
+    }
 
     @Override
     public void run()
     {
         try
         {
-            BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-            writer = new PrintWriter(socket.getOutputStream(), true);
-            String line;
-            while ((line = reader.readLine()) != null)
+            while (true)
             {
-                String response = handleCommand(line);
+                String response = handleCommand(comm.receive());
                 if (response == null)
                 {
-                    socket.close();
+                    comm.close();
                     break;
                 }
-                writer.println(response);
             }
         }
-        catch (IOException e) { e.printStackTrace(); }
+        catch (IOException e) { System.out.print(e.getMessage()); }
     }
 
-    public void gameStarted(Mobile player)
+    public void gameStarted(Mobile player, String str) throws IOException
     {
-        synchronized (socket)
-        {
-            this.player = (Player)player;
-            writer.println("Game started!");
-        }
+        synchronized (comm) { this.player = (Player)player; }
+        comm.sendString(2, str);
     }
 
-    public void gameFinished(boolean winner)
+    public void gameFinished(boolean winner) throws IOException
     {
-        synchronized (socket)
-        {
-            writer.println(winner ? "You won!" : "You lost.");
-        }
+        comm.sendString(3, winner ? "You won!" : "You lost.");
     }
 
-    private String handleCommand(String str)
+    public void gameJoined(int x, int y) throws IOException
+    {
+        comm.sendBytes(1, x, y);
+    }
+
+    private String handleCommand(Command cmd)
     {
         try
         {
-            Command cmd = parseCommand(str);
-            if (cmd == Command.Invalid)
-                return "Invalid command";
-            if (game == null && cmd != Command.Game && cmd != Command.Close && cmd != Command.Join)
+            if (game == null && cmd.type.ordinal() > CommandType.Show.ordinal())
                 return "You have to start or join a game first!";
             if (game != null && player == null)
                 return "Game isn't ready yet!";
-            switch (cmd)
+            switch (cmd.type)
             {
                 case Game:
                     if (game != null)
                         return "You are already in a game!";
-                    game = Game.startGame(this, str.substring(4).trim(), 2);
+                    game = Game.startGame(this, cmd.getData(), 2);
                     return "Game created.";
                 case Join:
                     game = Game.joinGame(this);
                     if (game == null)
                         return "No game to join.";
                     return "Game joined.";
-                case Show:
-                    return game.toString();
                 case Close:
                     game.leave(player);
                     return null;
@@ -106,34 +102,4 @@ public class ClientThread extends Thread
         catch (Exception ex) { return ex.getMessage(); }
         return "Invalid command";
     }
-
-    private Command parseCommand(String str)
-    {
-        switch (str.toLowerCase())
-        {
-            case "show":
-                return Command.Show;
-            case "join":
-                return Command.Join;
-            case "close":
-                return Command.Close;
-            case "left":
-                return Command.Left;
-            case "right":
-                return Command.Right;
-            case "step":
-                return Command.Step;
-            case "keys":
-                return Command.Keys;
-            case "take":
-                return Command.Take;
-            case "open":
-                return Command.Open;
-        }
-        if (str.toLowerCase().startsWith("game "))
-            return Command.Game;
-        return Command.Invalid;
-    }
-
-    private enum Command { Game, Join, Show, Close, Left, Right, Step, Keys, Take, Open, Invalid }
 }
