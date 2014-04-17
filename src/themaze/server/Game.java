@@ -99,7 +99,11 @@ public class Game
 
                 if (players < 1)
                     for (Map.Entry<Mobile, ClientThread> entry : mobiles.entrySet())
-                        entry.getValue().gameStarted(entry.getKey(), toBytes());
+                    {
+                        entry.getValue().gameStarted(entry.getKey());
+                        entry.getValue().gameChanged(toBytes());
+                    }
+
             }
         }
     }
@@ -126,6 +130,18 @@ public class Game
             synchronized (games) { games.remove(this); }
         }
     }
+
+    public void onChange() throws IOException
+    {
+        synchronized (maze)
+        {
+            for (ClientThread client : mobiles.values())
+                client.gameChanged(toBytes());
+
+            synchronized (games) { games.remove(this); }
+        }
+    }
+
 
     private byte[] toBytes()
     {

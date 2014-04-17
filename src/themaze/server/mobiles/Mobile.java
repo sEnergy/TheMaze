@@ -21,14 +21,15 @@ public abstract class Mobile
 
     public Position getPosition() { return position; }
 
-    public void turnLeft() { turn(-1); }
-    public void turnRight() { turn(1); }
-    private void turn(int dir)
+    public void turnLeft() throws IOException { turn(-1); }
+    public void turnRight() throws IOException { turn(1); }
+    private void turn(int dir) throws IOException
     {
         int i = direction.ordinal() + dir;
         while (i < 0)
             i = Direction.values().length - 1;
         direction = Direction.values()[i % Direction.values().length];
+        game.onChange();
     }
 
     public boolean step() throws IOException
@@ -38,6 +39,7 @@ public abstract class Mobile
         if (obj == null || obj.isEnterable())
         {
             position = newPos;
+            game.onChange();
             return true;
         }
         return false;

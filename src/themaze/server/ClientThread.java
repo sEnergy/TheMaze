@@ -38,10 +38,9 @@ public class ClientThread extends Thread
         catch (IOException e) { System.out.print(e.getMessage()); }
     }
 
-    public void gameStarted(Mobile player, byte[] data) throws IOException
+    public void gameStarted(Mobile player) throws IOException
     {
         synchronized (comm) { this.player = (Player)player; }
-        comm.sendData(2, data);
     }
 
     public void gameFinished(boolean winner) throws IOException
@@ -52,6 +51,11 @@ public class ClientThread extends Thread
     public void gameJoined(int x, int y) throws IOException
     {
         comm.sendBytes(1, x, y);
+    }
+
+    public void gameChanged(byte[] data) throws IOException
+    {
+        comm.sendData(2, data);
     }
 
     private String handleCommand(Command cmd)

@@ -14,23 +14,25 @@ public class Player extends Mobile
 
     public final int getKeys() { return keys; }
 
-    public final boolean take()
+    public final boolean take() throws IOException
     {
         MazeObject obj = game.getObject(position.add(direction));
         if (obj instanceof Key && ((Key)obj).take())
         {
             keys++;
+            game.onChange();
             return true;
         }
         return false;
     }
 
-    public final boolean open()
+    public final boolean open() throws IOException
     {
         MazeObject obj = game.getObject(position.add(direction));
         if (obj instanceof Gate && keys > 0 && ((Gate)obj).open())
         {
             keys--;
+            game.onChange();
             return true;
         }
         return false;
