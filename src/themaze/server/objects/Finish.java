@@ -6,7 +6,5 @@ public class Finish extends MazeObject
     public byte toByte() { return 5; }
 
     @Override
-    public boolean isEnterable() {
-        return true;
-    }
+    public boolean isEnterable() { return true; }
 }

@@ -10,7 +10,5 @@ public class Key extends MazeObject
     public boolean take() { return !taken && (taken = true); }
 
     @Override
-    public boolean isEnterable() {
-        return true;
-    }
+    public boolean isEnterable() { return true; }
 }

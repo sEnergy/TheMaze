@@ -37,7 +37,7 @@ public class ClientThread extends Thread
                         Server.startGame(this, comm.readInt(), comm.readInt());
                         break;
                     case Join:
-                        Server.joinGame(this);
+                        Server.joinGame(this, comm.readInt());
                         break;
                     case Close:
                         player.leave();
@@ -69,7 +69,13 @@ public class ClientThread extends Thread
             }
         }
         catch (Exception e) { e.printStackTrace(); }
-        finally { Server.removeClient(this); }
+        finally
+        {
+            Server.removeClient(this);
+            if (player != null)
+                try { player.leave(); }
+                catch (IOException e) { e.printStackTrace(); }
+        }
     }
 
     public void gamesChanged(List<Game> games) throws IOException

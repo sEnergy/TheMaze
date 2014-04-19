@@ -12,6 +12,7 @@ public class Game
     private final Maze maze;
     private final Map<Mobile, ClientThread> mobiles = new HashMap<>();
     private int players;
+    private boolean started, finished;
 
     public Game(Maze maze, int players) throws IOException
     {
@@ -33,8 +34,11 @@ public class Game
                 thread.gameJoined(player, maze.rows, maze.columns, maze.toBytes());
 
                 if (players < 1)
-                    for (ClientThread client : mobiles.values())
-                        client.gameChanged(toBytes());
+                {
+                    Server.removeGame(this);
+                    started = true;
+                    onChange();
+                }
             }
         }
     }
@@ -44,8 +48,11 @@ public class Game
         synchronized (maze)
         {
             mobiles.remove(player);
+            players++;
             if (mobiles.isEmpty())
                 Server.removeGame(this);
+            else if (started && !finished)
+                onChange();
         }
     }
 
@@ -55,10 +62,9 @@ public class Game
     {
         synchronized (maze)
         {
+            finished = true;
             for (Map.Entry<Mobile, ClientThread> entry : mobiles.entrySet())
                 entry.getValue().gameFinished(entry.getKey() == player);
-
-            Server.removeGame(this);
         }
     }
 

@@ -59,11 +59,11 @@ public class Server
         }
     }
 
-    public static void joinGame(ClientThread thread) throws IOException
+    public static void joinGame(ClientThread thread, int id) throws IOException
     {
         synchronized (games)
         {
-            Game game = games.get(0);
+            Game game = games.get(id);
             game.join(thread);
             for (ClientThread client : clients)
                 client.gamesChanged(games);

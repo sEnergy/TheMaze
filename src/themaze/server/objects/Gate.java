@@ -10,7 +10,5 @@ public class Gate extends MazeObject
     public boolean open() { return !open && (open = true); }
 
     @Override
-    public boolean isEnterable() {
-        return open;
-    }
+    public boolean isEnterable() { return open; }
 }

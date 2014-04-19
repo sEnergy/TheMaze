@@ -31,12 +31,8 @@ public class Client
     }
 
     public static void newGame(int id, int players) throws IOException
-    {
-        comm.sendCmd(Command.Game, id, players);
-    }
+    { comm.sendCmd(Command.Game, id, players); }
 
-    public static void joinGame(int id)
-    {
-
-    }
+    public static void joinGame(int id) throws IOException
+    { comm.sendCmd(Command.Join, id); }
 }

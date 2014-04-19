@@ -6,7 +6,5 @@ public class Wall extends MazeObject
     public byte toByte() { return 1; }
 
     @Override
-    public boolean isEnterable() {
-        return false;
-    }
+    public boolean isEnterable() { return false; }
 }

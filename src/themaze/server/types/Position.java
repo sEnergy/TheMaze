@@ -12,7 +12,7 @@ public class Position
 
     public Position add(Direction dir)
     {
-        switch(dir)
+        switch (dir)
         {
             case UP:
                 return new Position((byte) (row - 1), column);

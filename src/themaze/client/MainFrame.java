@@ -77,7 +77,7 @@ public class MainFrame extends JFrame implements ActionListener
             for (Command cmd : Command.values())
                 if (cmd.name().equalsIgnoreCase(e.getActionCommand().trim()))
                 {
-                    if (maze.getParent() != null)
+                    if (cmd == Command.Close || maze.isReady())
                         comm.sendCmd(cmd);
                     return;
                 }
@@ -91,16 +91,24 @@ public class MainFrame extends JFrame implements ActionListener
         this.comm = comm;
         remove(connect);
         add(games);
+        repaint();
         pack();
         System.out.println("Connected.");
     }
 
-    public void setMobiles(byte[] mobiles) { maze.setMobiles(mobiles); }
+    public void setMobiles(byte[] mobiles)
+    {
+        if (!maze.isReady())
+            System.out.println("Game started.");
+        maze.setMobiles(mobiles);
+    }
+
     public void setMaze(byte rows, byte columns, byte[] data)
     {
         maze.setMaze(rows, columns, data);
         remove(games);
         add(maze);
+        repaint();
         pack();
     }
 

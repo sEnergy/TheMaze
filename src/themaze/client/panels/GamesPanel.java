@@ -76,7 +76,12 @@ public class GamesPanel extends JPanel implements ActionListener
         }
         else if (e.getActionCommand().equals("Join Game"))
         {
-            Client.joinGame(5);
+            int i = games.getSelectedIndex();
+            if (i == -1)
+                System.out.println("You have to select some game!");
+            else
+                try { Client.joinGame(i); }
+                catch (IOException ex) { ex.printStackTrace(); }
         }
     }
 }

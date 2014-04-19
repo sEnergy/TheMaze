@@ -10,8 +10,7 @@ public class MazePanel extends JPanel
 {
     private final Map<Integer, Image> images = new HashMap<>();
     private int rows, columns;
-    private byte[] data = new byte[0];
-    private byte[] mobiles = new byte[0];
+    private byte[] data, mobiles;
     private boolean finished, winner;
 
     public MazePanel()
@@ -34,12 +33,14 @@ public class MazePanel extends JPanel
         images.put(103, new ImageIcon("lib/gui/dir_left.png").getImage());
     }
 
+    public boolean isReady() { return !finished && mobiles != null; }
+
     public void setMaze(int rows, int columns, byte[] data)
     {
         this.rows = rows;
         this.columns = columns;
         this.data = data;
-        this.mobiles = new byte[0];
+        this.mobiles = null;
         finished = winner = false;
         setPreferredSize(new Dimension(columns * 20, rows * 20));
         repaint();
@@ -84,15 +85,16 @@ public class MazePanel extends JPanel
                 g.drawImage(images.get(i), c * 20, r * 20, null);
             }
 
-        for (int i = 0; i < mobiles.length / 3; i += 3)
-        {
-            int r = mobiles[i];
-            int c = mobiles[i + 1];
-            int m = mobiles[i + 2];
-            int dir = (m % 10) % 4;
-            g.drawImage(images.get(m - dir), c * 20, r * 20, null);
-            g.drawImage(images.get(100 + dir), c * 20, r * 20, null);
-        }
+        if (mobiles != null)
+            for (int i = 0; i < mobiles.length; i += 3)
+            {
+                int r = mobiles[i];
+                int c = mobiles[i + 1];
+                int m = mobiles[i + 2];
+                int dir = (m % 10) % 4;
+                g.drawImage(images.get(m - dir), c * 20, r * 20, null);
+                g.drawImage(images.get(100 + dir), c * 20, r * 20, null);
+            }
 
         if (finished)
         {
