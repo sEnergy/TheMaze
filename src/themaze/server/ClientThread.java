@@ -1,23 +1,27 @@
 package themaze.server;
 
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
+import themaze.Communication;
+import themaze.Communication.Command;
 import themaze.server.mobiles.*;
-import themaze.server.net.Command;
-import themaze.server.net.Communication;
+import themaze.server.types.Position;
 
 import java.io.*;
 import java.net.Socket;
-
-import static themaze.server.net.Command.CommandType;
+import java.util.List;
 
 public class ClientThread extends Thread
 {
-    private Game game;
-    private Player player;
     private final Communication comm;
+    private Player player;
 
-    public ClientThread(Socket socket) throws IOException
+    public ClientThread(Socket socket, List<Maze> mazes) throws IOException
     {
-        this.comm = new Communication(socket);
+        comm = new Communication(socket);
+        String[] strs = new String[mazes.size()];
+        for (int i = 0; i < mazes.size(); i++)
+            strs[i] = mazes.get(i).toString();
+        comm.sendStrings(Command.Game, strs);
     }
 
     @Override
@@ -27,83 +31,83 @@ public class ClientThread extends Thread
         {
             while (true)
             {
-                String response = handleCommand(comm.receive());
-                if (response == null)
+                switch (comm.readCommand())
                 {
-                    comm.close();
-                    break;
+                    case Game:
+                        Server.startGame(this, comm.readInt(), comm.readInt());
+                        break;
+                    case Join:
+                        Server.joinGame(this);
+                        break;
+                    case Close:
+                        player.leave();
+                        player = null;
+                        Server.resendGames(this);
+                        break;
+                    case Keys:
+                        comm.sendBytes(Command.Keys, player.getKeys());
+                        break;
+                    case Take:
+                        player.take();
+                        break;
+                    case Open:
+                        player.open();
+                        break;
+                    case Left:
+                        player.turnLeft();
+                        break;
+                    case Right:
+                        player.turnRight();
+                        break;
+                    case Step:
+                        if (!player.step())
+                            comm.sendCmd(Command.Step);
+                        break;
+                    default:
+                        throw new NotImplementedException();
                 }
             }
         }
-        catch (IOException e) { System.out.print(e.getMessage()); }
+        catch (Exception e) { e.printStackTrace(); }
+        finally { Server.removeClient(this); }
     }
 
-    public void gameStarted(Mobile player) throws IOException
+    public void gamesChanged(List<Game> games) throws IOException
     {
-        synchronized (comm) { this.player = (Player)player; }
+        if (player == null)
+        {
+            String[] strs = new String[games.size()];
+            for (int i = 0; i < games.size(); i++)
+                strs[i] = games.get(i).toString();
+            comm.sendStrings(Command.Join, strs);
+        }
+    }
+
+    public void gameJoined(Player player, byte rows, byte columns, byte[] data) throws IOException
+    {
+        this.player = player;
+        comm.sendMaze(rows, columns, data);
     }
 
     public void gameFinished(boolean winner) throws IOException
-    {
-        comm.sendString(3, winner ? "You won!" : "You lost.");
-    }
-
-    public void gameJoined(int x, int y) throws IOException
-    {
-        comm.sendBytes(1, x, y);
-    }
+    { comm.sendBytes(Command.Close, winner ? 1 : 0); }
 
     public void gameChanged(byte[] data) throws IOException
+    { comm.sendMaze((byte) 1, (byte) data.length, data); }
+
+    public void onTake(boolean owner, Position position) throws IOException
     {
-        comm.sendData(2, data);
+        if (position != null)
+            comm.sendBytes(Command.Take, owner ? 1 : 0, position.row, position.column);
+        else if (owner)
+            comm.sendBytes(Command.Take, 2);
     }
 
-    private String handleCommand(Command cmd)
+    public void onOpen(boolean hadKeys, boolean owner, Position position) throws IOException
     {
-        try
-        {
-            if (game == null && cmd.type.ordinal() > CommandType.Show.ordinal())
-                return "You have to start or join a game first!";
-            if (game != null && player == null)
-                return "Game isn't ready yet!";
-            switch (cmd.type)
-            {
-                case Game:
-                    if (game != null)
-                        return "You are already in a game!";
-                    game = Game.startGame(this, cmd.getData(), 1);
-                    return "Game created.";
-                case Join:
-                    game = Game.joinGame(this);
-                    if (game == null)
-                        return "No game to join.";
-                    return "Game joined.";
-                case Close:
-                    game.leave(player);
-                    return null;
-                case Left:
-                    player.turnLeft();
-                    return "You have turned left.";
-                case Right:
-                    player.turnRight();
-                    return "You have turned right.";
-                case Step:
-                    if (player.step())
-                        return "You made step forward!";
-                    return "You can't make a step that way.";
-                case Keys:
-                    return String.format("You have %d key(s)\n", player.getKeys());
-                case Take:
-                    if (player.take())
-                        return "You picked up a key.";
-                    return "There is no key in front of you.";
-                case Open:
-                    if (player.open())
-                        return "You opened the gate.";
-                    return "Cant't open gate. (no gate or no key)";
-            }
-        }
-        catch (Exception ex) { return ex.getMessage(); }
-        return "Invalid command";
+        if (position != null)
+            comm.sendBytes(Command.Open, owner ? 1 : 0, position.row, position.column);
+        else if (owner)
+            comm.sendBytes(Command.Open, hadKeys ? 3 : 2);
     }
 }

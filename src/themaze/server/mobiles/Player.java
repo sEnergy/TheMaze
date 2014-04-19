@@ -8,34 +8,36 @@ import java.io.IOException;
 
 public class Player extends Mobile
 {
-    private int keys;
+    private byte keys;
 
     public Player(Game game, Position start) { super(game, start); }
 
-    public final int getKeys() { return keys; }
-
-    public final boolean take() throws IOException
+    public byte getKeys() { return keys; }
+    public void leave() throws IOException { game.leave(this); }
+    public void take() throws IOException
     {
-        MazeObject obj = game.getObject(position.add(direction));
-        if (obj instanceof Key && ((Key)obj).take())
+        Position pos = position.add(direction);
+        MazeObject obj = game.getObject(pos);
+        if (obj instanceof Key && ((Key) obj).take())
         {
             keys++;
-            game.onChange();
-            return true;
+            game.onTake(this, pos);
         }
-        return false;
+        else
+            game.onTake(this, null);
     }
 
-    public final boolean open() throws IOException
+    public void open() throws IOException
     {
-        MazeObject obj = game.getObject(position.add(direction));
-        if (obj instanceof Gate && keys > 0 && ((Gate)obj).open())
+        Position pos = position.add(direction);
+        MazeObject obj = game.getObject(pos);
+        if (obj instanceof Gate && keys > 0 && ((Gate) obj).open())
         {
             keys--;
-            game.onChange();
-            return true;
+            game.onOpen(true, this, pos);
         }
-        return false;
+        else
+            game.onOpen(keys > 0, this, null);
     }
 
     public byte toByte()

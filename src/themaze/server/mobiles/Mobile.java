@@ -34,11 +34,11 @@ public abstract class Mobile
 
     public boolean step() throws IOException
     {
-        Position newPos = position.add(direction);
-        MazeObject obj = game.getObject(newPos);
+        Position pos = position.add(direction);
+        MazeObject obj = game.getObject(pos);
         if (obj == null || obj.isEnterable())
         {
-            position = newPos;
+            position = pos;
             game.onChange();
             return true;
         }

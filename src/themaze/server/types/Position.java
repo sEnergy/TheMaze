@@ -2,12 +2,12 @@ package themaze.server.types;
 
 public class Position
 {
-    public final int x, y;
+    public final byte row, column;
 
-    public Position(int x, int y)
+    public Position(byte row, byte column)
     {
-        this.x = x;
-        this.y = y;
+        this.row = row;
+        this.column = column;
     }
 
     public Position add(Direction dir)
@@ -15,13 +15,13 @@ public class Position
         switch(dir)
         {
             case UP:
-                return new Position(x - 1, y);
+                return new Position((byte) (row - 1), column);
             case RIGHT:
-                return new Position(x, y + 1);
+                return new Position(row, (byte) (column + 1));
             case DOWN:
-                return new Position(x + 1, y);
+                return new Position((byte) (row + 1), column);
             case LEFT:
-                return new Position(x, y - 1);
+                return new Position(row, (byte) (column - 1));
         }
         return null;
     }

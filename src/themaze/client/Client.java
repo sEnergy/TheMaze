@@ -1,32 +1,42 @@
 package themaze.client;
 
-import java.awt.BorderLayout;
+import themaze.Communication;
+import themaze.Communication.Command;
 
-import javax.swing.JFrame;
+import java.io.IOException;
+import java.net.Socket;
 
-import themaze.client.renderlayer.RenderLayer;
+public class Client
+{
+    private static MainFrame frame;
+    private static Communication comm;
 
-public class Client extends JFrame {
+    public static void main(String[] args)
+    {
+        javax.swing.SwingUtilities.invokeLater(new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                frame = new MainFrame();
+                frame.setVisible(true);
+            }
+        });
+    }
 
-	private static final long serialVersionUID = 4704860925089425366L;
-	public static final String GAME_NAME = "The Maze - alfa version";
+    public static void connect(String host, int port) throws IOException
+    {
+        comm = new Communication(new Socket(host, port));
+        new ServerThread(comm, frame).start();
+    }
 
-	public static void main(String[] args) {
-		Client  core = new Client();
-		core.init();
-	}
-	
-	private void init () {
-		RenderLayer layer = new RenderLayer(300, 300, this);
-		this.add(layer);
-		this.pack();
-		
-		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		this.setLayout(new BorderLayout());
-		this.setVisible(true);
-		this.setTitle(GAME_NAME);
-		
-		layer.start();
-	}
+    public static void newGame(int id, int players) throws IOException
+    {
+        comm.sendCmd(Command.Game, id, players);
+    }
 
+    public static void joinGame(int id)
+    {
+
+    }
 }
