@@ -1,7 +1,9 @@
 package themaze.client;
 
 import javax.swing.*;
-import java.io.*;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.PrintStream;
 
 public class JConsoleOutput extends JScrollPane
 {

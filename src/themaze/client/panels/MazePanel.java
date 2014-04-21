@@ -25,7 +25,9 @@ public class MazePanel extends JPanel
         images.put(5, new ImageIcon("lib/gui/finish.png").getImage());
 
         images.put(10, new ImageIcon("lib/gui/pl1.png").getImage());
-        images.put(14, new ImageIcon("lib/gui/gate_pl1.png").getImage());
+        images.put(20, new ImageIcon("lib/gui/pl1.png").getImage());
+        images.put(30, new ImageIcon("lib/gui/pl1.png").getImage());
+        images.put(40, new ImageIcon("lib/gui/pl1.png").getImage());
 
         images.put(100, new ImageIcon("lib/gui/dir_up.png").getImage());
         images.put(101, new ImageIcon("lib/gui/dir_right.png").getImage());
@@ -91,9 +93,14 @@ public class MazePanel extends JPanel
                 int r = mobiles[i];
                 int c = mobiles[i + 1];
                 int m = mobiles[i + 2];
-                int dir = (m % 10) % 4;
+                int dir = m % 10;
                 g.drawImage(images.get(m - dir), c * 20, r * 20, null);
-                g.drawImage(images.get(100 + dir), c * 20, r * 20, null);
+                g.drawImage(images.get(100 + dir % 4), c * 20, r * 20, null);
+                if (dir > 3)
+                {
+                    g.setColor(Color.RED);
+                    g.fillOval(c * 20 + 9, r * 20 + 9, 2, 2);
+                }
             }
 
         if (finished)

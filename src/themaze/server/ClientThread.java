@@ -3,10 +3,9 @@ package themaze.server;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 import themaze.Communication;
 import themaze.Communication.Command;
-import themaze.server.mobiles.*;
-import themaze.server.types.Position;
+import themaze.server.mobiles.Player;
 
-import java.io.*;
+import java.io.IOException;
 import java.net.Socket;
 import java.util.List;
 

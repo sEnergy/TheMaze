@@ -1,62 +1,52 @@
 package themaze.server.mobiles;
 
 import themaze.server.Game;
-import themaze.server.objects.*;
-import themaze.server.types.*;
+import themaze.server.Position;
 
 import java.io.IOException;
 
 public class Player extends Mobile
 {
     private byte keys;
+    private Color color;
 
-    public Player(Game game, Position start) { super(game, start); }
+    public Player(Game game, Position start, Color color)
+    {
+        super(game, start);
+        this.color = color;
+    }
 
     public byte getKeys() { return keys; }
-    public void leave() throws IOException { game.leave(this); }
+    public void leave() throws IOException { game.leave(this, color); }
     public void take() throws IOException
     {
-        Position pos = position.add(direction);
-        MazeObject obj = game.getObject(pos);
-        if (obj instanceof Key && ((Key) obj).take())
-        {
+        if (game.take(this, position.add(direction)))
             keys++;
-            game.onTake(this, pos);
-        }
-        else
-            game.onTake(this, null);
     }
 
     public void open() throws IOException
     {
-        Position pos = position.add(direction);
-        MazeObject obj = game.getObject(pos);
-        if (obj instanceof Gate && keys > 0 && ((Gate) obj).open())
-        {
+        if (game.open(keys > 0, this, position.add(direction)))
             keys--;
-            game.onOpen(true, this, pos);
-        }
-        else
-            game.onOpen(keys > 0, this, null);
     }
 
+    @Override
     public byte toByte()
-    {
-        byte b = (byte) (10 + direction.ordinal());
-        if (game.getObject(position) instanceof Gate)
-            b += 4;
-        return b;
-    }
+    { return (byte) (10 + 10 * color.ordinal() + direction.ordinal()); }
 
     @Override
     public boolean step() throws IOException
     {
         if (super.step())
         {
-            if (game.getObject(position) instanceof Finish)
-                game.onFinish(this);
+            game.onFinish(this, position);
             return true;
         }
         return false;
+    }
+
+    public enum Color
+    {
+        Red, Green, Blue, TheFourth
     }
 }

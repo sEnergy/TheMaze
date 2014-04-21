@@ -1,9 +1,8 @@
-package themaze.server.types;
+package themaze.server;
 
 public class Position
 {
     public final byte row, column;
-
     public Position(byte row, byte column)
     {
         this.row = row;
@@ -14,15 +13,20 @@ public class Position
     {
         switch (dir)
         {
-            case UP:
+            case Up:
                 return new Position((byte) (row - 1), column);
-            case RIGHT:
+            case Right:
                 return new Position(row, (byte) (column + 1));
-            case DOWN:
+            case Down:
                 return new Position((byte) (row + 1), column);
-            case LEFT:
+            case Left:
                 return new Position(row, (byte) (column - 1));
         }
         return null;
+    }
+
+    public enum Direction
+    {
+        Up, Right, Down, Left
     }
 }

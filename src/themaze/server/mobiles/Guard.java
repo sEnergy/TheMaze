@@ -1,7 +1,7 @@
 package themaze.server.mobiles;
 
 import themaze.server.Game;
-import themaze.server.types.Position;
+import themaze.server.Position;
 
 public class Guard extends Mobile
 {

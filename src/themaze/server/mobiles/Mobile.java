@@ -1,8 +1,8 @@
 package themaze.server.mobiles;
 
 import themaze.server.Game;
-import themaze.server.objects.MazeObject;
-import themaze.server.types.*;
+import themaze.server.Position;
+import themaze.server.Position.Direction;
 
 import java.io.IOException;
 
@@ -16,7 +16,12 @@ public abstract class Mobile
     {
         this.game = game;
         position = start;
-        direction = Direction.UP;
+        for (Direction dir : Direction.values())
+            if (game.isEnterable(position.add(dir)))
+            {
+                direction = dir;
+                break;
+            }
     }
 
     public Position getPosition() { return position; }
@@ -29,17 +34,16 @@ public abstract class Mobile
         while (i < 0)
             i = Direction.values().length - 1;
         direction = Direction.values()[i % Direction.values().length];
-        game.onChange();
+        game.onMove();
     }
 
     public boolean step() throws IOException
     {
         Position pos = position.add(direction);
-        MazeObject obj = game.getObject(pos);
-        if (obj == null || obj.isEnterable())
+        if (game.isEnterable(pos))
         {
             position = pos;
-            game.onChange();
+            game.onMove();
             return true;
         }
         return false;

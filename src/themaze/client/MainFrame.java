@@ -2,7 +2,9 @@ package themaze.client;
 
 import themaze.Communication;
 import themaze.Communication.Command;
-import themaze.client.panels.*;
+import themaze.client.panels.ConnectPanel;
+import themaze.client.panels.GamesPanel;
+import themaze.client.panels.MazePanel;
 
 import javax.swing.*;
 import java.awt.*;
@@ -77,7 +79,7 @@ public class MainFrame extends JFrame implements ActionListener
             for (Command cmd : Command.values())
                 if (cmd.name().equalsIgnoreCase(e.getActionCommand().trim()))
                 {
-                    if (cmd == Command.Close || maze.isReady())
+                    if (maze.getParent() != null && (cmd == Command.Close || maze.isReady()))
                         comm.sendCmd(cmd);
                     return;
                 }
