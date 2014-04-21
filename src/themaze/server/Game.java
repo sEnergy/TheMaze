@@ -10,17 +10,23 @@ import themaze.server.objects.MazeObject;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 public class Game
 {
     private final Maze maze;
+    private final ScheduledThreadPoolExecutor scheduler = new ScheduledThreadPoolExecutor(4);
     private final Map<Mobile, ClientThread> mobiles = new HashMap<>();
-    private List<Color> colors;
+    private final List<Color> colors;
+    private final int speed;
     private boolean started, finished;
 
-    public Game(Maze maze, int players) throws IOException
+    public Game(Maze maze, int players, int speed) throws IOException
     {
         this.maze = maze;
+        this.speed = speed * 500;
         this.colors = new ArrayList<>(Arrays.asList(Color.values()));
         while (colors.size() > players)
             colors.remove(colors.size() - 1);
@@ -69,6 +75,9 @@ public class Game
         }
     }
 
+    public ScheduledFuture<?> go(Mobile mobile)
+    { return scheduler.scheduleAtFixedRate(mobile, 0, speed, TimeUnit.MILLISECONDS); }
+
     public boolean open(boolean hasKeys, Player player, Position position) throws IOException
     {
         synchronized (maze)
@@ -100,6 +109,7 @@ public class Game
             if (maze.at(position) instanceof Finish)
             {
                 finished = true;
+                scheduler.shutdownNow();
                 for (Map.Entry<Mobile, ClientThread> entry : mobiles.entrySet())
                     entry.getValue().gameFinished(entry.getKey() == player);
             }

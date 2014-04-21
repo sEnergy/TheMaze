@@ -1,6 +1,6 @@
 package themaze.client.panels;
 
-import themaze.client.Client;
+import themaze.client.MainFrame;
 
 import javax.swing.*;
 import java.awt.*;
@@ -49,7 +49,7 @@ public class ConnectPanel extends JPanel implements ActionListener
         try
         {
             int p = Integer.parseInt(port.getText());
-            Client.connect(server.getText(), p);
+            ((MainFrame) SwingUtilities.getRoot(this)).connect(server.getText(), p);
         }
         catch (NumberFormatException ex) { System.out.println("Invalid port!"); }
         catch (IOException ex) { ex.printStackTrace(); }

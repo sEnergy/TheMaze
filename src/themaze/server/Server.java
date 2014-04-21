@@ -50,11 +50,11 @@ public class Server
     public static void resendGames(ClientThread thread) throws IOException
     { synchronized (games) { thread.gamesChanged(games); } }
 
-    public static void startGame(ClientThread thread, int id, int players) throws IOException
+    public static void startGame(ClientThread thread, int id, int players, int speed) throws IOException
     {
         synchronized (games)
         {
-            Game game = new Game(new Maze(mazes.get(id)), players);
+            Game game = new Game(new Maze(mazes.get(id)), players, speed);
             game.join(thread);
             games.add(game);
             for (ClientThread client : clients)

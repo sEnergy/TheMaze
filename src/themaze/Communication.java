@@ -83,7 +83,7 @@ public class Communication implements Closeable
     public enum Command
     {
         //              S->C                                                C->S
-        Game,   //      int size, str[] names                               int id, int players
+        Game,   //      int size, str[] names                               int id, int players, int speed
         Join,   //      int size, str[] names                               int id
         Show,   //      byte rows, byte columns, byte[] maze                ----------
         //              byte 1, byte size, (byte r, c, m)[] mobiles         ----------
@@ -93,7 +93,7 @@ public class Communication implements Closeable
         //              byte 2 (fail)
         Open,   //      byte 0/1 (change/success), r, c
         //              byte 2/3 (no key/no gate)
-        Step,   //      only if fails
+        Step,   //      sent only if fails
         Go,     //
         Stop,   //
         Left,   //

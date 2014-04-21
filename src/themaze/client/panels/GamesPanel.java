@@ -1,18 +1,20 @@
 package themaze.client.panels;
 
-import themaze.client.Client;
+import themaze.client.MainFrame;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
+import java.util.Hashtable;
 
 public class GamesPanel extends JPanel implements ActionListener
 {
     private final JList<String> mazes = new JList<>();
     private final JList<String> games = new JList<>();
-    private final JSlider slider = new JSlider(1, 4, 1);
+    private final JSlider players = new JSlider(1, 4, 1);
+    private final JSlider speed = new JSlider(1, 10, 1);
 
     public GamesPanel()
     {
@@ -27,31 +29,37 @@ public class GamesPanel extends JPanel implements ActionListener
         joinGame.addActionListener(this);
         mazes.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         games.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        slider.setMajorTickSpacing(1);
-        slider.setMinorTickSpacing(1);
-        slider.setPaintTicks(true);
-        slider.setPaintLabels(true);
-        slider.setSnapToTicks(true);
-        slider.setPreferredSize(new Dimension(100, 50));
+        players.setMajorTickSpacing(1);
+        players.setPaintTrack(true);
+        players.setPaintLabels(true);
+        speed.setMajorTickSpacing(2);
+        speed.setMinorTickSpacing(1);
+        speed.setPaintTrack(true);
+        speed.setPaintLabels(true);
 
-        addToGrid(new JLabel("Mazes"), 0, 0, false);
-        addToGrid(mazes, 0, 1, true);
-        addToGrid(newGame, 0, 2, false);
-        addToGrid(new JLabel("Players"), 0, 3, false);
-        addToGrid(slider, 0, 4, false);
-        addToGrid(new JLabel("Games"), 1, 0, false);
-        addToGrid(games, 1, 1, true);
-        addToGrid(joinGame, 1, 2, false);
+        Hashtable<Integer, JLabel> labels = new Hashtable<>();
+        for (int i = 1; i <= 5; i++)
+            labels.put(i * 2, new JLabel(String.valueOf(i)));
+        speed.setLabelTable(labels);
+
+        addToGrid(new JLabel("Mazes"), 0, 0, false, 0);
+        addToGrid(mazes, 0, 1, true, 1);
+        addToGrid(newGame, 0, 2, false, 0);
+        addToGrid(new JLabel("Players"), 0, 3, false, 0);
+        addToGrid(players, 0, 4, true, 0);
+        addToGrid(new JLabel("Games"), 1, 0, false, 0);
+        addToGrid(games, 1, 1, true, 1);
+        addToGrid(joinGame, 1, 2, false, 0);
+        addToGrid(new JLabel("Speed"), 1, 3, false, 0);
+        addToGrid(speed, 1, 4, true, 0);
     }
 
-    private void addToGrid(Component component, int x, int y, boolean fill)
+    private void addToGrid(Component component, int x, int y, boolean fill, int weight)
     {
         GridBagConstraints c = new GridBagConstraints();
         if (fill)
-        {
             c.fill = GridBagConstraints.BOTH;
-            c.weighty = 1;
-        }
+        c.weighty = weight;
         c.weightx = 0.5;
         c.gridx = x;
         c.gridy = y;
@@ -71,7 +79,7 @@ public class GamesPanel extends JPanel implements ActionListener
             if (i == -1)
                 System.out.println("You have to select some maze!");
             else
-                try { Client.newGame(i, slider.getValue()); }
+                try { ((MainFrame) SwingUtilities.getRoot(this)).newGame(i, players.getValue(), speed.getValue()); }
                 catch (IOException ex) { ex.printStackTrace(); }
         }
         else if (e.getActionCommand().equals("Join Game"))
@@ -80,7 +88,7 @@ public class GamesPanel extends JPanel implements ActionListener
             if (i == -1)
                 System.out.println("You have to select some game!");
             else
-                try { Client.joinGame(i); }
+                try { ((MainFrame) SwingUtilities.getRoot(this)).joinGame(i); }
                 catch (IOException ex) { ex.printStackTrace(); }
         }
     }

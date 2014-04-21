@@ -5,12 +5,15 @@ import themaze.server.Position;
 import themaze.server.Position.Direction;
 
 import java.io.IOException;
+import java.util.concurrent.ScheduledFuture;
 
-public abstract class Mobile
+public abstract class Mobile implements Runnable
 {
+    private final Object syncRoot = new Object();
     protected Game game;
     protected Position position;
     protected Direction direction;
+    private ScheduledFuture<?> task;
 
     public Mobile(Game game, Position start)
     {
@@ -47,6 +50,38 @@ public abstract class Mobile
             return true;
         }
         return false;
+    }
+
+    public void go()
+    {
+        synchronized (syncRoot)
+        {
+            if (task == null)
+                task = game.go(this);
+        }
+    }
+
+    public void stop()
+    {
+        synchronized (syncRoot)
+        {
+            if (task != null)
+            {
+                task.cancel(false);
+                task = null;
+            }
+        }
+    }
+
+    @Override
+    public void run()
+    {
+        try
+        {
+            if (!step())
+                stop();
+        }
+        catch (IOException e) { e.printStackTrace(); }
     }
 
     public abstract byte toByte();

@@ -1,6 +1,5 @@
 package themaze.server;
 
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 import themaze.Communication;
 import themaze.Communication.Command;
 import themaze.server.mobiles.Player;
@@ -29,43 +28,7 @@ public class ClientThread extends Thread
         try
         {
             while (true)
-            {
-                switch (comm.readCommand())
-                {
-                    case Game:
-                        Server.startGame(this, comm.readInt(), comm.readInt());
-                        break;
-                    case Join:
-                        Server.joinGame(this, comm.readInt());
-                        break;
-                    case Close:
-                        player.leave();
-                        player = null;
-                        Server.resendGames(this);
-                        break;
-                    case Keys:
-                        comm.sendBytes(Command.Keys, player.getKeys());
-                        break;
-                    case Take:
-                        player.take();
-                        break;
-                    case Open:
-                        player.open();
-                        break;
-                    case Left:
-                        player.turnLeft();
-                        break;
-                    case Right:
-                        player.turnRight();
-                        break;
-                    case Step:
-                        if (!player.step())
-                            comm.sendCmd(Command.Step);
-                        break;
-                    default:
-                        throw new NotImplementedException();
-                }
-            }
+                handleCmd(comm.readCommand());
         }
         catch (Exception e) { e.printStackTrace(); }
         finally
@@ -114,5 +77,48 @@ public class ClientThread extends Thread
             comm.sendBytes(Command.Open, owner ? 1 : 0, position.row, position.column);
         else if (owner)
             comm.sendBytes(Command.Open, hadKeys ? 3 : 2);
+    }
+
+    private void handleCmd(Command cmd) throws IOException
+    {
+        switch (cmd)
+        {
+            case Game:
+                Server.startGame(this, comm.readInt(), comm.readInt(), comm.readInt());
+                break;
+            case Join:
+                Server.joinGame(this, comm.readInt());
+                break;
+            case Close:
+                player.leave();
+                player = null;
+                Server.resendGames(this);
+                break;
+            case Keys:
+                comm.sendBytes(Command.Keys, player.getKeys());
+                break;
+            case Take:
+                player.take();
+                break;
+            case Open:
+                player.open();
+                break;
+            case Left:
+                player.turnLeft();
+                break;
+            case Right:
+                player.turnRight();
+                break;
+            case Step:
+                if (!player.step())
+                    comm.sendCmd(Command.Step);
+                break;
+            case Go:
+                player.go();
+                break;
+            case Stop:
+                player.stop();
+                break;
+        }
     }
 }

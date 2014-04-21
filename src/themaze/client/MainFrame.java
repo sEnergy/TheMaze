@@ -1,6 +1,5 @@
 package themaze.client;
 
-import themaze.Communication;
 import themaze.Communication.Command;
 import themaze.client.panels.ConnectPanel;
 import themaze.client.panels.GamesPanel;
@@ -18,7 +17,7 @@ public class MainFrame extends JFrame implements ActionListener
     private final GamesPanel games = new GamesPanel();
     private final MazePanel maze = new MazePanel();
     private final JTextField input = new JTextField();
-    private Communication comm;
+    private ServerThread server;
 
     public MainFrame()
     {
@@ -48,6 +47,15 @@ public class MainFrame extends JFrame implements ActionListener
         add(panel);
         add(connect);
         pack();
+        setVisible(true);
+    }
+
+    public static void main(String[] args)
+    {
+        javax.swing.SwingUtilities.invokeLater(new Runnable()
+        {
+            public void run() { new MainFrame(); }
+        });
     }
 
     private void addButton(JPanel panel, String text, int x, int y, int width, int inset)
@@ -80,7 +88,7 @@ public class MainFrame extends JFrame implements ActionListener
                 if (cmd.name().equalsIgnoreCase(e.getActionCommand().trim()))
                 {
                     if (maze.getParent() != null && (cmd == Command.Close || maze.isReady()))
-                        comm.sendCmd(cmd);
+                        server.sendCmd(cmd);
                     return;
                 }
             System.out.println("Invalid command!");
@@ -88,9 +96,14 @@ public class MainFrame extends JFrame implements ActionListener
         catch (IOException ex) { ex.printStackTrace(); }
     }
 
-    public void setCommunication(Communication comm)
+    public void joinGame(int id) throws IOException { server.joinGame(id); }
+    public void newGame(int id, int players, int speed) throws IOException
+    { server.newGame(id, players, speed); }
+
+    public void connect(String host, int port) throws IOException
     {
-        this.comm = comm;
+        server = new ServerThread(this, host, port);
+        server.start();
         remove(connect);
         add(games);
         repaint();
