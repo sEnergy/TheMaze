@@ -1,24 +1,24 @@
 package themaze.server.mobiles;
 
 import themaze.server.Game;
-import themaze.server.Position;
-import themaze.server.Position.Direction;
+import themaze.Position;
+import themaze.Position.Direction;
 
 import java.io.IOException;
 import java.util.Random;
 
 public class Guard extends Mobile
 {
-    public Guard(Game game, Position start)
+    private final int index;
+
+    public Guard(Game game, Position start, int index)
     {
         super(game, start);
+        this.index = index;
     }
 
     @Override
-    public byte toByte()
-    {
-        return (byte) 50;
-    }
+    public byte toByte() { return (byte) (50 + index); }
 
     @Override
     public void step() throws IOException
@@ -28,7 +28,7 @@ public class Guard extends Mobile
         if (game.isEnterable(pos))
         {
             position = pos;
-            game.onMove();
+            game.onMove(this);
         }
     }
 }

@@ -112,13 +112,6 @@ public class MainFrame extends JFrame implements ActionListener
         System.out.println("Connected.");
     }
 
-    public void setMobiles(byte[] mobiles)
-    {
-        if (!maze.isReady())
-            System.out.println("Game started.");
-        maze.setMobiles(mobiles);
-    }
-
     public void setMaze(byte rows, byte columns, byte[] data)
     {
         maze.setMaze(rows, columns, data);
@@ -143,4 +136,9 @@ public class MainFrame extends JFrame implements ActionListener
 
     public void onFinish(boolean winner) { maze.finish(winner); }
     public void onChange(byte row, byte column, byte data) { maze.change(row, column, data); }
+    public void onStart()
+    {
+        maze.start();
+        System.out.println("Game started.");
+    }
 }

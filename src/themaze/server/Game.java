@@ -1,5 +1,6 @@
 package themaze.server;
 
+import themaze.Position;
 import themaze.server.mobiles.Guard;
 import themaze.server.mobiles.Mobile;
 import themaze.server.mobiles.Player;
@@ -37,8 +38,8 @@ public class Game
         while (colors.size() > players)
             colors.remove(colors.size() - 1);
 
-        for (Position pos : maze.guards)
-            guards.add(new Guard(this, pos));
+        for (int i = 0; i < maze.guards.size(); i++)
+            guards.add(new Guard(this, maze.guards.get(i), i));
     }
 
     public void join(ClientThread thread) throws IOException
@@ -57,10 +58,14 @@ public class Game
             {
                 Server.removeGame(this);
                 started = true;
-                onMove();
+                for (Player p : players)
+                    onMove(p);
+
+                for (Player p : players)
+                    p.onStart();
 
                 for (Guard g : guards)
-                    scheduler.scheduleAtFixedRate(g, 2, speed, TimeUnit.MILLISECONDS);
+                    scheduler.scheduleAtFixedRate(g, 0, speed, TimeUnit.MILLISECONDS);
             }
         }
     }
@@ -74,7 +79,11 @@ public class Game
             if (players.isEmpty())
                 Server.removeGame(this);
             else if (started && winner == null)
-                onMove();
+            {
+                Position pos = player.getPosition();
+                for (Player p : players)
+                    p.onChange(pos, (byte) -1);
+            }
         }
     }
 
@@ -116,48 +125,34 @@ public class Game
         }
     }
 
-    public void onMove() throws IOException
+    public void onMove(Guard guard) throws IOException
     {
         synchronized (maze)
         {
+            Position position = guard.getPosition();
+            byte data = guard.toByte();
             for (Player p : players)
-            {
-                p.onMove(toBytes(p));
-                if (maze.at(p.getPosition()) instanceof Finish)
-                    winner = p;
-            }
+                p.onChange(position, data);
+        }
+    }
 
-            if (winner != null)
+    public void onMove(Player player) throws IOException
+    {
+        synchronized (maze)
+        {
+            byte data = player.toByte();
+            Position position = player.getPosition();
+
+            for (Player p : players)
+                p.onChange(position, (byte) (data + (p == player ? 4 : 0)));
+
+            if (maze.at(position) instanceof Finish)
             {
+                winner = player;
                 scheduler.shutdownNow();
                 for (Player p : players)
                     p.onFinish(p == winner);
             }
-        }
-    }
-
-    private byte[] toBytes(Player player)
-    {
-        synchronized (maze)
-        {
-            byte[] data = new byte[(players.size() + guards.size()) * 3];
-            int i = 0;
-            for (Player p : players)
-            {
-                Position pos = p.getPosition();
-                data[i++] = pos.row;
-                data[i++] = pos.column;
-                data[i++] = (byte) (p.toByte() + (p == player ? 4 : 0));
-            }
-
-            for (Guard g : guards)
-            {
-                Position pos = g.getPosition();
-                data[i++] = pos.row;
-                data[i++] = pos.column;
-                data[i++] = g.toByte();
-            }
-            return data;
         }
     }
 

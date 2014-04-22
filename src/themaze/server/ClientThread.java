@@ -2,6 +2,7 @@ package themaze.server;
 
 import themaze.Communication;
 import themaze.Communication.Command;
+import themaze.Position;
 import themaze.server.mobiles.Player;
 
 import java.io.IOException;
@@ -57,27 +58,27 @@ public class ClientThread extends Thread
         comm.sendData(Command.Maze, data, rows, columns);
     }
 
-    public void onFinish(boolean winner) throws IOException
-    { comm.sendBytes(Command.Close, winner ? 1 : 0); }
+    public void onStart()throws IOException
+    { comm.sendCmd(Command.Close, 0); }
 
-    public void onMove(byte[] data) throws IOException
-    { comm.sendData(Command.Mobiles, data, data.length); }
+    public void onFinish(boolean winner) throws IOException
+    { comm.sendCmd(Command.Close, winner ? 1 : 2); }
 
     public void onChange(Position position, byte newByte) throws IOException
-    { comm.sendBytes(Command.Change, position.row, position.column, newByte); }
+    { comm.sendCmd(Command.Change, position.row, position.column, newByte); }
 
     public void sendCmd(Command cmd, int... data) throws IOException
-    { comm.sendBytes(cmd, data); }
+    { comm.sendCmd(cmd, data); }
 
     private void handleCmd(Command cmd) throws IOException, IllegalAccessException, InstantiationException
     {
         switch (cmd)
         {
             case Game:
-                Server.startGame(this, comm.readInt(), comm.readInt(), comm.readInt());
+                Server.startGame(this, comm.readByte(), comm.readByte(), comm.readByte());
                 break;
             case Join:
-                Server.joinGame(this, comm.readInt());
+                Server.joinGame(this, comm.readByte());
                 break;
             case Close:
                 player.leave();
@@ -85,7 +86,7 @@ public class ClientThread extends Thread
                 Server.resendGames(this);
                 break;
             case Keys:
-                comm.sendBytes(Command.Keys, player.getKeys());
+                comm.sendCmd(Command.Keys, player.getKeys());
                 break;
             case Take:
                 player.take();

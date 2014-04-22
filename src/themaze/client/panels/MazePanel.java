@@ -1,5 +1,7 @@
 package themaze.client.panels;
 
+import themaze.Position;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.geom.Rectangle2D;
@@ -10,8 +12,9 @@ public class MazePanel extends JPanel
 {
     private final Map<Integer, Image> images = new HashMap<>();
     private int rows, columns;
-    private byte[] data, mobiles;
-    private boolean finished, winner;
+    private byte[] data;
+    private Map<Position, Byte> mobiles = new HashMap<>();
+    private boolean finished, winner, started;
 
     public MazePanel()
     {
@@ -35,35 +38,43 @@ public class MazePanel extends JPanel
         images.put(103, new ImageIcon("lib/gui/dir_left.png").getImage());
     }
 
-    public boolean isReady() { return !finished && mobiles != null; }
+    public boolean isReady() { return !finished && started; }
 
     public void setMaze(int rows, int columns, byte[] data)
     {
         this.rows = rows;
         this.columns = columns;
         this.data = data;
-        this.mobiles = null;
-        finished = winner = false;
+        this.mobiles.clear();
+        finished = winner = started = false;
         setPreferredSize(new Dimension(columns * 20, rows * 20));
         repaint();
     }
 
-    public void setMobiles(byte[] mobiles)
+    public void start() { started = true; }
+    public void finish(boolean winner)
     {
-        this.mobiles = mobiles;
+        finished = true;
+        this.winner = winner;
         repaint();
     }
 
     public void change(int row, int column, byte newData)
     {
-        data[column + row * columns] = newData;
-        repaint();
-    }
-
-    public void finish(boolean winner)
-    {
-        finished = true;
-        this.winner = winner;
+        if (newData < 0)
+            mobiles.remove(new Position(row, column));
+        else if (newData < 10)
+            data[column + row * columns] = newData;
+        else
+        {
+            for (Map.Entry<Position, Byte> mobile : mobiles.entrySet())
+                if (newData / 10 == mobile.getValue() / 10)
+                {
+                    mobiles.remove(mobile.getKey());
+                    break;
+                }
+            mobiles.put(new Position(row, column), newData);
+        }
         repaint();
     }
 
@@ -81,29 +92,28 @@ public class MazePanel extends JPanel
                 g.drawImage(images.get(i), c * 20, r * 20, null);
             }
 
-        if (mobiles != null)
-            for (int i = 0; i < mobiles.length; i += 3)
+        for (Map.Entry<Position, Byte> mobile : mobiles.entrySet())
+        {
+            int r = mobile.getKey().row;
+            int c = mobile.getKey().column;
+            int m = mobile.getValue();
+            int dir = m % 10;
+            if (m == 50)
             {
-                int r = mobiles[i];
-                int c = mobiles[i + 1];
-                int m = mobiles[i + 2];
-                int dir = m % 10;
-                if (m == 50)
-                {
-                    g.setColor(Color.RED);
-                    g.fillOval(c * 20, r * 20, 20, 20);
-                }
-                else
-                {
-                    g.drawImage(images.get(m - dir), c * 20, r * 20, null);
-                    g.drawImage(images.get(100 + dir % 4), c * 20, r * 20, null);
-                }
-                if (dir > 3)
-                {
-                    g.setColor(Color.RED);
-                    g.fillOval(c * 20 + 9, r * 20 + 9, 2, 2);
-                }
+                g.setColor(Color.RED);
+                g.fillOval(c * 20, r * 20, 20, 20);
             }
+            else
+            {
+                g.drawImage(images.get(m - dir), c * 20, r * 20, null);
+                g.drawImage(images.get(100 + dir % 4), c * 20, r * 20, null);
+            }
+            if (dir > 3)
+            {
+                g.setColor(Color.RED);
+                g.fillOval(c * 20 + 9, r * 20 + 9, 2, 2);
+            }
+        }
 
         if (finished)
         {

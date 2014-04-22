@@ -1,5 +1,6 @@
 package themaze.server;
 
+import themaze.Position;
 import themaze.server.objects.*;
 
 import java.io.BufferedReader;

@@ -22,7 +22,6 @@ public class Communication implements Closeable
     public Command readCommand() throws IOException { return Command.values()[input.read()]; }
 
     public String readString() throws IOException { return input.readUTF(); }
-    public int readInt() throws IOException { return input.readInt(); }
     public byte readByte() throws IOException { return input.readByte(); }
     public byte[] readBytes(int size) throws IOException
     {
@@ -32,17 +31,6 @@ public class Communication implements Closeable
     }
 
     public void sendCmd(Command cmd, int... data) throws IOException
-    {
-        synchronized (output)
-        {
-            output.writeByte(cmd.ordinal());
-            for (int i : data)
-                output.writeInt(i);
-            output.flush();
-        }
-    }
-
-    public void sendBytes(Command cmd, int... data) throws IOException
     {
         synchronized (output)
         {
@@ -70,7 +58,7 @@ public class Communication implements Closeable
         synchronized (output)
         {
             output.writeByte(cmd.ordinal());
-            output.writeInt(strs.length);
+            output.writeByte(strs.length);
             for (String str : strs)
                 output.writeUTF(str);
             output.flush();
@@ -83,12 +71,11 @@ public class Communication implements Closeable
     public enum Command
     {
         //              S->C                                                C->S
-        Game,   //      int size, str[] names                               int id, int players, int speed
-        Join,   //      int size, str[] names                               int id
+        Game,   //      byte size, str[] names                              byte id, byte players, byte speed
+        Join,   //      byte size, str[] names                              byte id
         Maze,   //      byte rows, byte columns, byte[] maze                ----------
-        Mobiles,//      byte size, (byte r, c, m)[] mobiles                 ----------
-        Change, //      byte r, c, b                                        ----------
-        Close,  //      byte winner
+        Change, //      byte row, column, data                              ----------
+        Close,  //      byte 0/1/2 (start/won/lost)
         Keys,   //      byte keys
         Take,   //      byte 0/1 (success/fail)
         Open,   //      byte 0/1/2 (success/no key/no gate)

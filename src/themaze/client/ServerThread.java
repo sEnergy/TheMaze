@@ -37,7 +37,7 @@ public class ServerThread extends Thread
         switch (cmd)
         {
             case Game:
-                final String[] mazes = new String[comm.readInt()];
+                final String[] mazes = new String[comm.readByte()];
                 for (int i = 0; i < mazes.length; i++)
                     mazes[i] = comm.readString();
                 javax.swing.SwingUtilities.invokeLater(new Runnable()
@@ -47,7 +47,7 @@ public class ServerThread extends Thread
                 break;
 
             case Join:
-                final String[] games = new String[comm.readInt()];
+                final String[] games = new String[comm.readByte()];
                 for (int i = 0; i < games.length; i++)
                     games[i] = comm.readString();
                 javax.swing.SwingUtilities.invokeLater(new Runnable()
@@ -66,14 +66,6 @@ public class ServerThread extends Thread
                 });
                 break;
 
-            case Mobiles:
-                final byte[] mobiles = comm.readBytes(comm.readByte());
-                javax.swing.SwingUtilities.invokeLater(new Runnable()
-                {
-                    public void run() { frame.setMobiles(mobiles); }
-                });
-                break;
-
             case Change:
                 final byte row = comm.readByte();
                 final byte column = comm.readByte();
@@ -85,10 +77,16 @@ public class ServerThread extends Thread
                 break;
 
             case Close:
-                final boolean winner = comm.readByte() == 1;
+                final byte status = comm.readByte();
                 javax.swing.SwingUtilities.invokeLater(new Runnable()
                 {
-                    public void run() { frame.onFinish(winner); }
+                    public void run()
+                    {
+                        if (status == 0)
+                            frame.onStart();
+                        else
+                            frame.onFinish(status == 1);
+                    }
                 });
                 break;
 
