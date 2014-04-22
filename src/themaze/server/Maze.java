@@ -13,25 +13,29 @@ public class Maze
 {
     public final byte rows, columns;
     public final List<Position> starts;
+    public final List<Position> guards;
     private final String name;
     private final MazeObject[][] maze;
 
-    public Maze(Maze m)
+    public Maze(Maze m) throws IllegalAccessException, InstantiationException
     {
         this.rows = m.rows;
         this.columns = m.columns;
         this.name = m.name;
         this.starts = new ArrayList<>(m.starts);
+        this.guards = new ArrayList<>(m.guards);
         maze = new MazeObject[rows][columns];
         for (byte r = 0; r < rows; r++)
             for (byte c = 0; c < columns; c++)
-                maze[r][c] = copy(m.maze[r][c]);
+                if (m.maze[r][c] != null)
+                    maze[r][c] = m.maze[r][c].getClass().newInstance();
     }
 
     public Maze(File file) throws IOException
     {
         name = file.getName().substring(0, file.getName().length() - 4);
         starts = new ArrayList<>();
+        guards = new ArrayList<>();
         try (BufferedReader br = new BufferedReader(new FileReader(file)))
         {
             String[] data;
@@ -55,25 +59,15 @@ public class Maze
         }
     }
 
-    private MazeObject copy(MazeObject obj)
-    {
-        if (obj instanceof Gate)
-            return new Gate();
-        if (obj instanceof Wall)
-            return new Wall();
-        if (obj instanceof Key)
-            return new Key();
-        if (obj instanceof Finish)
-            return new Finish();
-        return null;
-    }
-
     private void parseObject(byte row, byte column, String type) throws IOException
     {
         switch (type)
         {
             case "S":
                 starts.add(new Position(row, column));
+                break;
+            case "X":
+                guards.add(new Position(row, column));
                 break;
             case "G":
                 maze[row][column] = new Gate();

@@ -1,49 +1,110 @@
 package themaze.server.mobiles;
 
+import themaze.Communication.Command;
+import themaze.server.ClientThread;
 import themaze.server.Game;
 import themaze.server.Position;
+import themaze.server.Position.Direction;
 
 import java.io.IOException;
 
 public class Player extends Mobile
 {
+    private final ClientThread thread;
+    private final Color color;
+    private Direction direction;
     private byte keys;
-    private Color color;
 
-    public Player(Game game, Position start, Color color)
+    public Player(Game game, ClientThread thread, Position start, Color color)
     {
         super(game, start);
+        this.thread = thread;
         this.color = color;
+        for (Position.Direction dir : Position.Direction.values())
+            if (game.isEnterable(position.add(dir)))
+            {
+                direction = dir;
+                break;
+            }
     }
 
     public byte getKeys() { return keys; }
+    public void turnLeft() throws IOException { turn(-1); }
+    public void turnRight() throws IOException { turn(1); }
+    private void turn(int dir) throws IOException
+    {
+        synchronized (game)
+        {
+            int i = direction.ordinal() + dir;
+            while (i < 0)
+                i = Position.Direction.values().length - 1;
+            direction = Position.Direction.values()[i % Position.Direction.values().length];
+            game.onMove();
+        }
+    }
+
     public void leave() throws IOException { game.leave(this, color); }
     public void take() throws IOException
     {
-        if (game.take(this, position.add(direction)))
-            keys++;
+        synchronized (game)
+        {
+            if (game.take(position.add(direction)))
+            {
+                keys++;
+                thread.sendCmd(Command.Take, 0);
+            }
+            else
+                thread.sendCmd(Command.Take, 1);
+        }
     }
 
     public void open() throws IOException
     {
-        if (game.open(keys > 0, this, position.add(direction)))
-            keys--;
+        synchronized (game)
+        {
+            if (keys <= 0)
+                thread.sendCmd(Command.Open, 1);
+            else if (!game.open(position.add(direction)))
+                thread.sendCmd(Command.Open, 2);
+            else
+            {
+                keys--;
+                thread.sendCmd(Command.Open, 0);
+            }
+        }
+    }
+
+    @Override
+    public void step() throws IOException
+    {
+        synchronized (game)
+        {
+            Position pos = position.add(direction);
+            if (game.isEnterable(pos))
+            {
+                position = pos;
+                game.onMove();
+            }
+            else
+            {
+                thread.sendCmd(Command.Step);
+                stop();
+            }
+        }
     }
 
     @Override
     public byte toByte()
     { return (byte) (10 + 10 * color.ordinal() + direction.ordinal()); }
 
-    @Override
-    public boolean step() throws IOException
-    {
-        if (super.step())
-        {
-            game.onFinish(this, position);
-            return true;
-        }
-        return false;
-    }
+    public void onChange(Position position, byte newByte) throws IOException
+    { thread.onChange(position, newByte); }
+
+    public void onMove(byte[] data) throws IOException
+    { thread.onMove(data); }
+
+    public void onFinish(boolean winner) throws IOException
+    { thread.onFinish(winner); }
 
     public enum Color
     {

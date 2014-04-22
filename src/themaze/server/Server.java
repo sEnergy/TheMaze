@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.net.ServerSocket;
+import java.security.InvalidParameterException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,10 +18,23 @@ public class Server
     {
         try
         {
+            int port;
+            try
+            {
+                port = Integer.parseInt(args[0]);
+                if (port < 0 || port > 0xFFFF)
+                    throw new InvalidParameterException();
+            }
+            catch (Exception ex)
+            {
+                System.err.println("Invalid port.");
+                return;
+            }
+
             for (File file : getMazeFiles())
                 mazes.add(new Maze(file));
 
-            ServerSocket server = new ServerSocket(50000);
+            ServerSocket server = new ServerSocket(port);
             while (true)
             {
                 ClientThread client = new ClientThread(server.accept(), mazes);
@@ -50,7 +64,7 @@ public class Server
     public static void resendGames(ClientThread thread) throws IOException
     { synchronized (games) { thread.gamesChanged(games); } }
 
-    public static void startGame(ClientThread thread, int id, int players, int speed) throws IOException
+    public static void startGame(ClientThread thread, int id, int players, int speed) throws IOException, InstantiationException, IllegalAccessException
     {
         synchronized (games)
         {

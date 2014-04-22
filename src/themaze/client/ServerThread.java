@@ -56,19 +56,31 @@ public class ServerThread extends Thread
                 });
                 break;
 
-            case Show:
+            case Maze:
                 final byte rows = comm.readByte();
                 final byte columns = comm.readByte();
-                final byte[] data = comm.readBytes(rows * columns);
+                final byte[] maze = comm.readBytes(rows * columns);
                 javax.swing.SwingUtilities.invokeLater(new Runnable()
                 {
-                    public void run()
-                    {
-                        if (rows == 1)
-                            frame.setMobiles(data);
-                        else
-                            frame.setMaze(rows, columns, data);
-                    }
+                    public void run() { frame.setMaze(rows, columns, maze); }
+                });
+                break;
+
+            case Mobiles:
+                final byte[] mobiles = comm.readBytes(comm.readByte());
+                javax.swing.SwingUtilities.invokeLater(new Runnable()
+                {
+                    public void run() { frame.setMobiles(mobiles); }
+                });
+                break;
+
+            case Change:
+                final byte row = comm.readByte();
+                final byte column = comm.readByte();
+                final byte data = comm.readByte();
+                javax.swing.SwingUtilities.invokeLater(new Runnable()
+                {
+                    public void run() { frame.onChange(row, column, data); }
                 });
                 break;
 
@@ -86,42 +98,24 @@ public class ServerThread extends Thread
 
             case Take:
                 final byte take = comm.readByte();
-                if (take == 2)
+                if (take == 0)
+                    System.out.println("You picked up a key.");
+                else if (take == 1)
                     System.out.println("There is no key in front of you.");
-                else
-                {
-                    if (take == 1)
-                        System.out.println("You picked up a key.");
-                    final byte row = comm.readByte();
-                    final byte column = comm.readByte();
-                    javax.swing.SwingUtilities.invokeLater(new Runnable()
-                    {
-                        public void run() { frame.onTake(row, column); }
-                    });
-                }
                 break;
 
             case Open:
                 final byte open = comm.readByte();
-                if (open == 2)
+                if (open == 0)
+                    System.out.println("You opened the gate.");
+                else if (open == 1)
                     System.out.println("You don't have a key!");
-                else if (open == 3)
+                else if (open == 2)
                     System.out.println("There is no gate in front of you.");
-                else
-                {
-                    if (open == 1)
-                        System.out.println("You opened the gate.");
-                    final byte row = comm.readByte();
-                    final byte column = comm.readByte();
-                    javax.swing.SwingUtilities.invokeLater(new Runnable()
-                    {
-                        public void run() { frame.onOpen(row, column); }
-                    });
-                }
                 break;
 
             case Step:
-                System.out.println("You can't make a step that way.");
+                System.out.println("You can't go that way.");
                 break;
         }
     }

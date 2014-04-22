@@ -53,13 +53,13 @@ public class Communication implements Closeable
         }
     }
 
-    public void sendMaze(byte rows, byte columns, byte[] data) throws IOException
+    public void sendData(Command cmd, byte[] data, int... attributes) throws IOException
     {
         synchronized (output)
         {
-            output.writeByte(Command.Show.ordinal());
-            output.writeByte(rows);
-            output.writeByte(columns);
+            output.writeByte(cmd.ordinal());
+            for (int b : attributes)
+                output.writeByte(b);
             output.write(data);
             output.flush();
         }
@@ -85,14 +85,13 @@ public class Communication implements Closeable
         //              S->C                                                C->S
         Game,   //      int size, str[] names                               int id, int players, int speed
         Join,   //      int size, str[] names                               int id
-        Show,   //      byte rows, byte columns, byte[] maze                ----------
-        //              byte 1, byte size, (byte r, c, m)[] mobiles         ----------
+        Maze,   //      byte rows, byte columns, byte[] maze                ----------
+        Mobiles,//      byte size, (byte r, c, m)[] mobiles                 ----------
+        Change, //      byte r, c, b                                        ----------
         Close,  //      byte winner
         Keys,   //      byte keys
-        Take,   //      byte 0/1 (change/success), r, c
-        //              byte 2 (fail)
-        Open,   //      byte 0/1 (change/success), r, c
-        //              byte 2/3 (no key/no gate)
+        Take,   //      byte 0/1 (success/fail)
+        Open,   //      byte 0/1/2 (success/no key/no gate)
         Step,   //      sent only if fails
         Go,     //
         Stop,   //

@@ -84,11 +84,12 @@ public class MainFrame extends JFrame implements ActionListener
         try
         {
             input.setText(null);
-            for (Command cmd : Command.values())
-                if (cmd.name().equalsIgnoreCase(e.getActionCommand().trim()))
+            Command[] cmd = Command.values();
+            for (int i = Command.Close.ordinal(); i < cmd.length; i++)
+                if (cmd[i].name().equalsIgnoreCase(e.getActionCommand().trim()))
                 {
-                    if (maze.getParent() != null && (cmd == Command.Close || maze.isReady()))
-                        server.sendCmd(cmd);
+                    if (maze.getParent() != null && (cmd[i] == Command.Close || maze.isReady()))
+                        server.sendCmd(cmd[i]);
                     return;
                 }
             System.out.println("Invalid command!");
@@ -141,6 +142,5 @@ public class MainFrame extends JFrame implements ActionListener
     }
 
     public void onFinish(boolean winner) { maze.finish(winner); }
-    public void onOpen(byte row, byte column) { maze.open(row, column); }
-    public void onTake(byte row, byte column) { maze.take(row, column); }
+    public void onChange(byte row, byte column, byte data) { maze.change(row, column, data); }
 }

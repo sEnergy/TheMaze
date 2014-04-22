@@ -54,15 +54,9 @@ public class MazePanel extends JPanel
         repaint();
     }
 
-    public void open(int row, int column)
+    public void change(int row, int column, byte newData)
     {
-        data[column + row * columns] = 3;
-        repaint();
-    }
-
-    public void take(int row, int column)
-    {
-        data[column + row * columns] = 0;
+        data[column + row * columns] = newData;
         repaint();
     }
 
@@ -94,8 +88,16 @@ public class MazePanel extends JPanel
                 int c = mobiles[i + 1];
                 int m = mobiles[i + 2];
                 int dir = m % 10;
-                g.drawImage(images.get(m - dir), c * 20, r * 20, null);
-                g.drawImage(images.get(100 + dir % 4), c * 20, r * 20, null);
+                if (m == 50)
+                {
+                    g.setColor(Color.RED);
+                    g.fillOval(c * 20, r * 20, 20, 20);
+                }
+                else
+                {
+                    g.drawImage(images.get(m - dir), c * 20, r * 20, null);
+                    g.drawImage(images.get(100 + dir % 4), c * 20, r * 20, null);
+                }
                 if (dir > 3)
                 {
                     g.setColor(Color.RED);
