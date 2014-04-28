@@ -14,6 +14,7 @@ public class Player extends Mobile
     private final Color color;
     private Direction direction;
     private byte keys;
+    private int steps;
 
     public Player(Game game, ClientThread thread, Position start, Color color)
     {
@@ -28,7 +29,7 @@ public class Player extends Mobile
             }
     }
 
-    public boolean isActive() { return position.row >= 0 && position.column >= 0; }
+    public boolean isAlive() { return position.row >= 0 && position.column >= 0; }
     public byte getKeys() { return keys; }
     public void turnLeft() throws IOException { turn(-1); }
     public void turnRight() throws IOException { turn(1); }
@@ -102,6 +103,7 @@ public class Player extends Mobile
             if (game.isEnterable(pos))
             {
                 position = pos;
+                steps++;
                 game.move(this);
             }
             else
@@ -124,6 +126,9 @@ public class Player extends Mobile
 
     public void onStart() throws IOException
     { thread.onStart(); }
+
+    public void onInfo() throws IOException
+    { thread.onInfo(toByte(), steps); }
 
     public enum Color
     {

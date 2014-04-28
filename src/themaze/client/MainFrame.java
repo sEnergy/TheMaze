@@ -138,4 +138,5 @@ public class MainFrame extends JFrame implements ActionListener
     public void onFinish(boolean winner) { maze.finish(winner); }
     public void onChange(byte row, byte column, byte data) { maze.change(row, column, data); }
     public void onStart() { maze.start(); }
+    public void onInfo(byte mobile, int steps) { maze.onInfo(mobile, steps); }
 }

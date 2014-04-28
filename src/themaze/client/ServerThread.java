@@ -77,6 +77,15 @@ public class ServerThread extends Thread
                 });
                 break;
 
+            case Info:
+                final byte mobile = comm.readByte();
+                final int steps = comm.readInt();
+                javax.swing.SwingUtilities.invokeLater(new Runnable()
+                {
+                    public void run() { frame.onInfo(mobile, steps); }
+                });
+                break;
+
             case Close:
                 final byte status = comm.readByte();
                 javax.swing.SwingUtilities.invokeLater(new Runnable()

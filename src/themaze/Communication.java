@@ -23,6 +23,7 @@ public class Communication implements Closeable
 
     public String readString() throws IOException { return input.readUTF(); }
     public byte readByte() throws IOException { return input.readByte(); }
+    public int readInt() throws IOException { return input.readInt(); }
     public byte[] readBytes(int size) throws IOException
     {
         byte[] data = new byte[size];
@@ -37,6 +38,18 @@ public class Communication implements Closeable
             output.writeByte(cmd.ordinal());
             for (int b : data)
                 output.writeByte(b);
+            output.flush();
+        }
+    }
+
+    public void sendData(Command cmd, byte b, int... data) throws IOException
+    {
+        synchronized (output)
+        {
+            output.writeByte(cmd.ordinal());
+            output.writeByte(b);
+            for (int i : data)
+                output.writeInt(i);
             output.flush();
         }
     }
@@ -75,6 +88,7 @@ public class Communication implements Closeable
         Join,   //      byte size, str[] names                              byte id
         Maze,   //      byte rows, byte columns, byte[] maze                ----------
         Change, //      byte row, column, data                              ----------
+        Info,   //      byte data, int steps                                ----------
         Close,  //      byte 0/1/2 (start/won/lost)
         Keys,   //      byte keys
         Take,   //      byte 0/1 (success/fail)

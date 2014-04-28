@@ -86,8 +86,18 @@ public class Game
                 Server.removeGame(this);
             }
             else if (started && winner == null)
+            {
+                boolean end = true;
                 for (Player p : players)
+                {
                     p.onChange(player.getPosition(), player.toByte());
+                    if (p.isAlive())
+                        end = false;
+                }
+
+                if (end)
+                    end();
+            }
         }
     }
 
@@ -138,10 +148,9 @@ public class Game
                 p.onChange(player.getPosition(), player.toByte());
 
             for (Player p : players)
-                if (p.isActive())
+                if (p.isAlive())
                     return;
-
-            scheduler.shutdownNow();
+            end();
         }
     }
 
@@ -182,12 +191,19 @@ public class Game
             if (maze.at(player.getPosition()) instanceof Finish)
             {
                 winner = player;
-                scheduler.shutdownNow();
                 for (Player p : players)
-                    if (p.isActive())
+                    if (p.isAlive())
                         p.onFinish(p == winner);
+                end();
             }
         }
+    }
+
+    private void end() throws IOException
+    {
+        scheduler.shutdownNow();
+        for (Player p : players)
+            p.onInfo();
     }
 
     @Override

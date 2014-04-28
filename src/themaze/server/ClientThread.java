@@ -67,6 +67,9 @@ public class ClientThread extends Thread
     public void onChange(Position position, byte newByte) throws IOException
     { comm.sendCmd(Command.Change, position.row, position.column, newByte); }
 
+    public void onInfo(byte b, int steps) throws IOException
+    { comm.sendData(Command.Info, b, steps); }
+
     public void sendCmd(Command cmd, int... data) throws IOException
     { comm.sendCmd(cmd, data); }
 
