@@ -22,7 +22,7 @@ import java.util.concurrent.TimeUnit;
 public class Game
 {
     private final Maze maze;
-    private final ScheduledThreadPoolExecutor scheduler = new ScheduledThreadPoolExecutor(4);
+    private final ScheduledThreadPoolExecutor scheduler = new ScheduledThreadPoolExecutor(1);
     private final List<Player> players = new ArrayList<>();
     private final List<Guard> guards = new ArrayList<>();
     private final List<Color> colors;
@@ -50,16 +50,20 @@ public class Game
                 return;
 
             Position start = maze.starts.remove(new Random().nextInt(maze.starts.size()));
-            Player player = new Player(this, thread, start, colors.remove(0));
+            Color color = colors.remove(0);
+            Player player = new Player(this, thread, start, color);
             players.add(player);
-            thread.onJoin(player, maze.rows, maze.columns, maze.toBytes());
+            thread.onJoin(player, (byte) (color.ordinal() + 1), maze.rows, maze.columns, maze.toBytes());
 
             if (colors.isEmpty())
             {
                 Server.removeGame(this);
                 started = true;
                 for (Player p : players)
-                    onMove(p);
+                    move(p);
+
+                for (Guard g : guards)
+                    move(g);
 
                 for (Player p : players)
                     p.onStart();
@@ -77,13 +81,13 @@ public class Game
             players.remove(player);
             colors.add(color);
             if (players.isEmpty())
-                Server.removeGame(this);
-            else if (started && winner == null)
             {
-                Position pos = player.getPosition();
-                for (Player p : players)
-                    p.onChange(pos, (byte) -1);
+                scheduler.shutdownNow();
+                Server.removeGame(this);
             }
+            else if (started && winner == null)
+                for (Player p : players)
+                    p.onChange(player.getPosition(), player.toByte());
         }
     }
 
@@ -125,33 +129,76 @@ public class Game
         }
     }
 
-    public void onMove(Guard guard) throws IOException
+    private Player getPlayer(Position position)
+    {
+        for (Player player : players)
+            if (player.getPosition().equals(position))
+                return player;
+        return null;
+    }
+
+    private Guard getGuard(Position position)
+    {
+        for (Guard guard : guards)
+            if (guard.getPosition().equals(position))
+                return guard;
+        return null;
+    }
+
+    private void kill(Player player) throws IOException
     {
         synchronized (maze)
         {
-            Position position = guard.getPosition();
-            byte data = guard.toByte();
+            player.die();
             for (Player p : players)
-                p.onChange(position, data);
+                p.onChange(player.getPosition(), player.toByte());
+
+            for (Player p : players)
+                if (p.isActive())
+                    return;
+
+            scheduler.shutdownNow();
+            Server.removeGame(this);
         }
     }
 
-    public void onMove(Player player) throws IOException
+    public void move(Guard guard) throws IOException
+    {
+        synchronized (maze)
+        {
+            byte data = guard.toByte();
+            Position pos = guard.getPosition();
+
+            for (Player p : players)
+                p.onChange(pos, data);
+
+            Player player = getPlayer(pos);
+            if (player != null)
+                kill(player);
+        }
+    }
+
+    public void move(Player player) throws IOException
     {
         synchronized (maze)
         {
             byte data = player.toByte();
-            Position position = player.getPosition();
+            Position pos = player.getPosition();
 
             for (Player p : players)
-                p.onChange(position, (byte) (data + (p == player ? 4 : 0)));
+                p.onChange(pos, data);
 
-            if (maze.at(position) instanceof Finish)
+            Guard guard = getGuard(pos);
+            if (guard != null)
+                kill(player);
+
+            if (maze.at(player.getPosition()) instanceof Finish)
             {
                 winner = player;
                 scheduler.shutdownNow();
                 for (Player p : players)
-                    p.onFinish(p == winner);
+                    if (p.isActive())
+                        p.onFinish(p == winner);
             }
         }
     }

@@ -57,12 +57,13 @@ public class ServerThread extends Thread
                 break;
 
             case Maze:
+                final byte color = comm.readByte();
                 final byte rows = comm.readByte();
                 final byte columns = comm.readByte();
                 final byte[] maze = comm.readBytes(rows * columns);
                 javax.swing.SwingUtilities.invokeLater(new Runnable()
                 {
-                    public void run() { frame.setMaze(rows, columns, maze); }
+                    public void run() { frame.setMaze(color, rows, columns, maze); }
                 });
                 break;
 

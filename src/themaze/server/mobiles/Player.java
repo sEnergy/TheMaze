@@ -1,10 +1,10 @@
 package themaze.server.mobiles;
 
 import themaze.Communication.Command;
-import themaze.server.ClientThread;
-import themaze.server.Game;
 import themaze.Position;
 import themaze.Position.Direction;
+import themaze.server.ClientThread;
+import themaze.server.Game;
 
 import java.io.IOException;
 
@@ -28,6 +28,7 @@ public class Player extends Mobile
             }
     }
 
+    public boolean isActive() { return position.row >= 0 && position.column >= 0; }
     public byte getKeys() { return keys; }
     public void turnLeft() throws IOException { turn(-1); }
     public void turnRight() throws IOException { turn(1); }
@@ -39,7 +40,7 @@ public class Player extends Mobile
             while (i < 0)
                 i = Position.Direction.values().length - 1;
             direction = Position.Direction.values()[i % Position.Direction.values().length];
-            game.onMove(this);
+            game.move(this);
         }
     }
 
@@ -48,7 +49,17 @@ public class Player extends Mobile
         synchronized (game)
         {
             stop();
+            position = new Position(-1, 0);
             game.leave(this, color);
+        }
+    }
+
+    public void die() throws IOException
+    {
+        synchronized (game)
+        {
+            stop();
+            position = new Position(-1, -1);
         }
     }
 
@@ -91,7 +102,7 @@ public class Player extends Mobile
             if (game.isEnterable(pos))
             {
                 position = pos;
-                game.onMove(this);
+                game.move(this);
             }
             else
             {

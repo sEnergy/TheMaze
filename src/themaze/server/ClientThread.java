@@ -52,13 +52,13 @@ public class ClientThread extends Thread
         }
     }
 
-    public void onJoin(Player player, byte rows, byte columns, byte[] data) throws IOException
+    public void onJoin(Player player, byte color, byte rows, byte columns, byte[] data) throws IOException
     {
         this.player = player;
-        comm.sendData(Command.Maze, data, rows, columns);
+        comm.sendData(Command.Maze, data, color, rows, columns);
     }
 
-    public void onStart()throws IOException
+    public void onStart() throws IOException
     { comm.sendCmd(Command.Close, 0); }
 
     public void onFinish(boolean winner) throws IOException

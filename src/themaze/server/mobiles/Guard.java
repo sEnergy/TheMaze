@@ -1,8 +1,8 @@
 package themaze.server.mobiles;
 
-import themaze.server.Game;
 import themaze.Position;
 import themaze.Position.Direction;
+import themaze.server.Game;
 
 import java.io.IOException;
 import java.util.Random;
@@ -23,12 +23,15 @@ public class Guard extends Mobile
     @Override
     public void step() throws IOException
     {
-        int dir = new Random().nextInt(Direction.values().length);
-        Position pos = position.add(Direction.values()[dir]);
-        if (game.isEnterable(pos))
+        synchronized (game)
         {
-            position = pos;
-            game.onMove(this);
+            int dir = new Random().nextInt(Direction.values().length);
+            Position pos = position.add(Direction.values()[dir]);
+            if (game.isEnterable(pos))
+            {
+                position = pos;
+                game.move(this);
+            }
         }
     }
 }

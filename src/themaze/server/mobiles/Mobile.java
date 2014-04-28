@@ -1,7 +1,7 @@
 package themaze.server.mobiles;
 
-import themaze.server.Game;
 import themaze.Position;
+import themaze.server.Game;
 
 import java.io.IOException;
 import java.util.concurrent.ScheduledFuture;

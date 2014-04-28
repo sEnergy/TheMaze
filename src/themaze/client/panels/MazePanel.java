@@ -11,10 +11,10 @@ import java.util.Map;
 public class MazePanel extends JPanel
 {
     private final Map<Integer, Image> images = new HashMap<>();
-    private int rows, columns;
+    private int color, rows, columns;
     private byte[] data;
-    private Map<Position, Byte> mobiles = new HashMap<>();
-    private boolean finished, winner, started;
+    private Map<Integer, Mobile> mobiles = new HashMap<>();
+    private GameState state;
 
     public MazePanel()
     {
@@ -38,42 +38,51 @@ public class MazePanel extends JPanel
         images.put(103, new ImageIcon("lib/gui/dir_left.png").getImage());
     }
 
-    public boolean isReady() { return !finished && started; }
+    public boolean isReady() { return state == GameState.Started; }
 
-    public void setMaze(int rows, int columns, byte[] data)
+    public void setMaze(byte color, byte rows, byte columns, byte[] data)
     {
+        this.color = color * 10;
         this.rows = rows;
         this.columns = columns;
         this.data = data;
         this.mobiles.clear();
-        finished = winner = started = false;
+        state = GameState.Init;
         setPreferredSize(new Dimension(columns * 20, rows * 20));
         repaint();
     }
 
-    public void start() { started = true; }
+    public void start()
+    {
+        state = GameState.Started;
+        System.out.println("Game started.");
+    }
+
     public void finish(boolean winner)
     {
-        finished = true;
-        this.winner = winner;
+        state = winner ? GameState.Won : GameState.Lost;
         repaint();
     }
 
     public void change(int row, int column, byte newData)
     {
-        if (newData < 0)
-            mobiles.remove(new Position(row, column));
-        else if (newData < 10)
+        if (newData < 10)
             data[column + row * columns] = newData;
         else
         {
-            for (Map.Entry<Position, Byte> mobile : mobiles.entrySet())
-                if (newData / 10 == mobile.getValue() / 10)
-                {
-                    mobiles.remove(mobile.getKey());
-                    break;
-                }
-            mobiles.put(new Position(row, column), newData);
+            int dir = newData % 10;
+            int m = newData - dir;
+
+            if (row == -1)
+                mobiles.remove(m);
+            else
+                mobiles.put(m, new Mobile(row, column, dir));
+
+            if (column == -1)
+                if (m == color)
+                    state = GameState.Killed;
+                else
+                    System.out.printf("Player %d has been killed.\n", m / 10);
         }
         repaint();
     }
@@ -92,39 +101,63 @@ public class MazePanel extends JPanel
                 g.drawImage(images.get(i), c * 20, r * 20, null);
             }
 
-        for (Map.Entry<Position, Byte> mobile : mobiles.entrySet())
+        for (Map.Entry<Integer, Mobile> entry : mobiles.entrySet())
         {
-            int r = mobile.getKey().row;
-            int c = mobile.getKey().column;
-            int m = mobile.getValue();
-            int dir = m % 10;
-            if (m == 50)
+            Mobile mobile = entry.getValue();
+            int r = mobile.position.row;
+            int c = mobile.position.column;
+            int m = entry.getKey();
+            if (m >= 50)
             {
                 g.setColor(Color.RED);
                 g.fillOval(c * 20, r * 20, 20, 20);
             }
             else
             {
-                g.drawImage(images.get(m - dir), c * 20, r * 20, null);
-                g.drawImage(images.get(100 + dir % 4), c * 20, r * 20, null);
+                g.drawImage(images.get(m), c * 20, r * 20, null);
+                g.drawImage(images.get(100 + mobile.direction), c * 20, r * 20, null);
             }
-            if (dir > 3)
+            if (m == color)
             {
                 g.setColor(Color.RED);
                 g.fillOval(c * 20 + 9, r * 20 + 9, 2, 2);
             }
         }
 
-        if (finished)
+        if (state == GameState.Killed)
+            drawStatus(g, "You have been killed!", Color.RED);
+        else if (state == GameState.Won)
+            drawStatus(g, "You have won!", Color.GREEN);
+        else if (state == GameState.Lost)
+            drawStatus(g, "You have lost.", Color.YELLOW);
+
+    }
+
+    private void drawStatus(Graphics g, String str, Color color)
+    {
+        g.setColor(color);
+        g.setFont(g.getFont().deriveFont(Font.BOLD, 20));
+        FontMetrics fm = g.getFontMetrics();
+        Rectangle2D r = fm.getStringBounds(str, g);
+        int x = (columns * 20 - (int) r.getWidth()) / 2;
+        int y = (rows * 20 - (int) r.getHeight()) / 2 + fm.getAscent();
+        g.drawString(str, x, y);
+    }
+
+    private enum GameState
+    {
+        Init, Started, Killed, Won, Lost
+    }
+
+    private class Mobile
+    {
+        public final Position position;
+        public final int direction;
+
+        private Mobile(int row, int column, int dir)
         {
-            String str = winner ? "You have won!" : "You have lost.";
-            g.setColor(winner ? Color.GREEN : Color.RED);
-            g.setFont(g.getFont().deriveFont(Font.BOLD, 20));
-            FontMetrics fm = g.getFontMetrics();
-            Rectangle2D r = fm.getStringBounds(str, g);
-            int x = (columns * 20 - (int) r.getWidth()) / 2;
-            int y = (rows * 20 - (int) r.getHeight()) / 2 + fm.getAscent();
-            g.drawString(str, x, y);
+            position = new Position(row, column);
+            direction = dir;
         }
     }
 }

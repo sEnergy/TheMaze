@@ -69,8 +69,8 @@ public class Server
         synchronized (games)
         {
             Game game = new Game(new Maze(mazes.get(id)), players, speed);
-            game.join(thread);
             games.add(game);
+            game.join(thread);
             for (ClientThread client : clients)
                 client.gamesChanged(games);
         }
