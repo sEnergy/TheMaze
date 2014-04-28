@@ -129,22 +129,6 @@ public class Game
         }
     }
 
-    private Player getPlayer(Position position)
-    {
-        for (Player player : players)
-            if (player.getPosition().equals(position))
-                return player;
-        return null;
-    }
-
-    private Guard getGuard(Position position)
-    {
-        for (Guard guard : guards)
-            if (guard.getPosition().equals(position))
-                return guard;
-        return null;
-    }
-
     private void kill(Player player) throws IOException
     {
         synchronized (maze)
@@ -158,7 +142,6 @@ public class Game
                     return;
 
             scheduler.shutdownNow();
-            Server.removeGame(this);
         }
     }
 
@@ -172,9 +155,9 @@ public class Game
             for (Player p : players)
                 p.onChange(pos, data);
 
-            Player player = getPlayer(pos);
-            if (player != null)
-                kill(player);
+            for (Player player : players)
+                if (player.getPosition().equals(pos))
+                    kill(player);
         }
     }
 
@@ -188,9 +171,13 @@ public class Game
             for (Player p : players)
                 p.onChange(pos, data);
 
-            Guard guard = getGuard(pos);
-            if (guard != null)
-                kill(player);
+            for (Guard guard : guards)
+                if (guard.getPosition().equals(pos))
+                    kill(player);
+
+            for (Player p : players)
+                if (p != player && p.getPosition().equals(pos))
+                    kill(p);
 
             if (maze.at(player.getPosition()) instanceof Finish)
             {

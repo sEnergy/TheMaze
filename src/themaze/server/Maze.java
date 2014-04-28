@@ -46,6 +46,8 @@ public class Maze
 
             rows = Byte.parseByte(data[0]);
             columns = Byte.parseByte(data[1]);
+            if (rows > 50 || columns > 50 || rows < 20 || columns < 20)
+                throw new IOException("Invalid maze format");
             maze = new MazeObject[rows][columns];
 
             for (byte r = 0; r < rows; r++)
