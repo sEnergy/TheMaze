@@ -1,9 +1,6 @@
 package themaze;
 
-import java.io.Closeable;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.net.Socket;
 
 public class Communication implements Closeable
@@ -31,7 +28,7 @@ public class Communication implements Closeable
         return data;
     }
 
-    public void sendCmd(Command cmd, int... data) throws IOException
+    public void sendBytes(Command cmd, int... data) throws IOException
     {
         synchronized (output)
         {
@@ -42,12 +39,11 @@ public class Communication implements Closeable
         }
     }
 
-    public void sendData(Command cmd, byte b, int... data) throws IOException
+    public void sendInts(Command cmd, int... data) throws IOException
     {
         synchronized (output)
         {
             output.writeByte(cmd.ordinal());
-            output.writeByte(b);
             for (int i : data)
                 output.writeInt(i);
             output.flush();

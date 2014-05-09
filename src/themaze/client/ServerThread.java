@@ -17,10 +17,10 @@ public class ServerThread extends Thread
         comm = new Communication(new Socket(host, port));
     }
 
-    public void sendCmd(Command cmd) throws IOException { comm.sendCmd(cmd);}
-    public void joinGame(int id) throws IOException { comm.sendCmd(Command.Join, id); }
+    public void sendCmd(Command cmd) throws IOException { comm.sendBytes(cmd);}
+    public void joinGame(int id) throws IOException { comm.sendBytes(Command.Join, id); }
     public void newGame(int id, int players, int speed) throws IOException
-    { comm.sendCmd(Command.Game, id, players, speed); }
+    { comm.sendBytes(Command.Game, id, players, speed); }
 
     public void run()
     {
@@ -78,7 +78,7 @@ public class ServerThread extends Thread
                 break;
 
             case Info:
-                final byte mobile = comm.readByte();
+                final int mobile = comm.readInt();
                 final int steps = comm.readInt();
                 javax.swing.SwingUtilities.invokeLater(new Runnable()
                 {

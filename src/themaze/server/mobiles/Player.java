@@ -1,27 +1,21 @@
 package themaze.server.mobiles;
 
-import themaze.Communication.Command;
 import themaze.Position;
 import themaze.Position.Direction;
-import themaze.server.ClientThread;
 import themaze.server.Game;
 
 import java.io.IOException;
 
 public class Player extends Mobile
 {
-    private final ClientThread thread;
     private final Color color;
-    private Direction direction;
     private byte keys;
-    private int steps;
 
-    public Player(Game game, ClientThread thread, Position start, Color color)
+    public Player(Game game, Position start, Color color)
     {
         super(game, start);
-        this.thread = thread;
         this.color = color;
-        for (Position.Direction dir : Position.Direction.values())
+        for (Direction dir : Direction.values())
             if (game.isEnterable(position.add(dir)))
             {
                 direction = dir;
@@ -29,21 +23,7 @@ public class Player extends Mobile
             }
     }
 
-    public boolean isAlive() { return position.row >= 0 && position.column >= 0; }
     public byte getKeys() { return keys; }
-    public void turnLeft() throws IOException { turn(-1); }
-    public void turnRight() throws IOException { turn(1); }
-    private void turn(int dir) throws IOException
-    {
-        synchronized (game)
-        {
-            int i = direction.ordinal() + dir;
-            while (i < 0)
-                i = Position.Direction.values().length - 1;
-            direction = Position.Direction.values()[i % Position.Direction.values().length];
-            game.move(this);
-        }
-    }
 
     public void leave() throws IOException
     {
@@ -59,76 +39,68 @@ public class Player extends Mobile
     {
         synchronized (game)
         {
-            stop();
-            position = new Position(-1, -1);
+            if (isAlive())
+            {
+                stop();
+                position = new Position(0, -1);
+            }
         }
     }
 
-    public void take() throws IOException
+    public byte take() throws IOException
     {
         synchronized (game)
         {
+            if (!isAlive())
+                return -1;
             if (game.take(position.add(direction)))
             {
                 keys++;
-                thread.sendCmd(Command.Take, 0);
+                return 0;
             }
             else
-                thread.sendCmd(Command.Take, 1);
+                return 1;
         }
     }
 
-    public void open() throws IOException
+    public byte open() throws IOException
     {
         synchronized (game)
         {
+            if (!isAlive())
+                return -1;
             if (keys <= 0)
-                thread.sendCmd(Command.Open, 1);
+                return 1;
             else if (!game.open(position.add(direction)))
-                thread.sendCmd(Command.Open, 2);
+                return 2;
             else
             {
                 keys--;
-                thread.sendCmd(Command.Open, 0);
+                return 0;
             }
         }
     }
 
     @Override
-    public void step() throws IOException
+    public boolean step() throws IOException
     {
         synchronized (game)
         {
-            Position pos = position.add(direction);
-            if (game.isEnterable(pos))
+            if (!isAlive())
+                return false;
+            if (super.step())
             {
-                position = pos;
-                steps++;
                 game.move(this);
+                return true;
             }
-            else
-            {
-                thread.sendCmd(Command.Step);
-                stop();
-            }
+            stop();
+            return false;
         }
     }
 
     @Override
     public byte toByte()
     { return (byte) (10 + 10 * color.ordinal() + direction.ordinal()); }
-
-    public void onChange(Position position, byte newByte) throws IOException
-    { thread.onChange(position, newByte); }
-
-    public void onFinish(boolean winner) throws IOException
-    { thread.onFinish(winner); }
-
-    public void onStart() throws IOException
-    { thread.onStart(); }
-
-    public void onInfo() throws IOException
-    { thread.onInfo(toByte(), steps); }
 
     public enum Color
     {

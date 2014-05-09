@@ -1,29 +1,20 @@
 package themaze.server;
 
 import themaze.Position;
-import themaze.server.mobiles.Guard;
-import themaze.server.mobiles.Mobile;
-import themaze.server.mobiles.Player;
+import themaze.server.mobiles.*;
 import themaze.server.mobiles.Player.Color;
-import themaze.server.objects.Finish;
-import themaze.server.objects.Gate;
-import themaze.server.objects.Key;
-import themaze.server.objects.MazeObject;
+import themaze.server.objects.*;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Random;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.ScheduledThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
+import java.util.*;
+import java.util.Map.Entry;
+import java.util.concurrent.*;
 
 public class Game
 {
     private final Maze maze;
-    private final ScheduledThreadPoolExecutor scheduler = new ScheduledThreadPoolExecutor(1);
-    private final List<Player> players = new ArrayList<>();
+    private final ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
+    private final Map<Player, ClientThread> players = new HashMap<>();
     private final List<Guard> guards = new ArrayList<>();
     private final List<Color> colors;
     private final int speed;
@@ -42,168 +33,140 @@ public class Game
             guards.add(new Guard(this, maze.guards.get(i), i));
     }
 
-    public void join(ClientThread thread) throws IOException
+    public synchronized void join(ClientThread thread) throws IOException
     {
-        synchronized (maze)
+        if (colors.isEmpty())
+            return;
+
+        Position start = maze.starts.remove(new Random().nextInt(maze.starts.size()));
+        Color color = colors.remove(0);
+        Player player = new Player(this, start, color);
+        players.put(player, thread);
+        thread.onJoin(player, (byte) (color.ordinal() + 1), maze.rows, maze.columns, maze.toBytes());
+
+        if (colors.isEmpty())
         {
-            if (colors.isEmpty())
-                return;
+            Server.removeGame(this);
+            started = true;
+            for (Guard g : guards)
+                move(g);
 
-            Position start = maze.starts.remove(new Random().nextInt(maze.starts.size()));
-            Color color = colors.remove(0);
-            Player player = new Player(this, thread, start, color);
-            players.add(player);
-            thread.onJoin(player, (byte) (color.ordinal() + 1), maze.rows, maze.columns, maze.toBytes());
-
-            if (colors.isEmpty())
+            for (Entry<Player, ClientThread> p : players.entrySet())
             {
-                Server.removeGame(this);
-                started = true;
-                for (Player p : players)
-                    move(p);
-
-                for (Guard g : guards)
-                    move(g);
-
-                for (Player p : players)
-                    p.onStart();
-
-                for (Guard g : guards)
-                    scheduler.scheduleAtFixedRate(g, 0, speed, TimeUnit.MILLISECONDS);
+                move((Mobile) p.getKey());
+                p.getValue().onStart();
             }
+
+            for (Guard g : guards)
+                scheduler.scheduleAtFixedRate(g, 0, speed, TimeUnit.MILLISECONDS);
         }
     }
 
-    public void leave(Player player, Color color) throws IOException
+    public synchronized void leave(Player player, Color color) throws IOException
     {
-        synchronized (maze)
+        players.remove(player);
+        colors.add(color);
+        if (players.isEmpty())
         {
-            players.remove(player);
-            colors.add(color);
-            if (players.isEmpty())
+            scheduler.shutdownNow();
+            Server.removeGame(this);
+        }
+        else if (started && winner == null)
+        {
+            boolean end = true;
+            for (Entry<Player, ClientThread> p : players.entrySet())
             {
-                scheduler.shutdownNow();
-                Server.removeGame(this);
+                p.getValue().onChange(player.getPosition(), player.toByte());
+                if (p.getKey().isAlive())
+                    end = false;
             }
-            else if (started && winner == null)
-            {
-                boolean end = true;
-                for (Player p : players)
-                {
-                    p.onChange(player.getPosition(), player.toByte());
-                    if (p.isAlive())
-                        end = false;
-                }
 
-                if (end)
-                    end();
-            }
+            if (end)
+                end();
         }
     }
 
-    public boolean isEnterable(Position position)
+    public synchronized boolean isEnterable(Position position)
     {
-        synchronized (maze)
-        {
-            MazeObject obj = maze.at(position);
-            return obj == null || obj.isEnterable();
-        }
+        MazeObject obj = maze.at(position);
+        return obj == null || obj.isEnterable();
     }
 
     public ScheduledFuture<?> go(Mobile mobile)
     { return scheduler.scheduleAtFixedRate(mobile, 0, speed, TimeUnit.MILLISECONDS); }
 
-    public boolean open(Position position) throws IOException
+    public synchronized boolean open(Position position) throws IOException
     {
-        synchronized (maze)
+        MazeObject obj = maze.at(position);
+        if (obj instanceof Gate && ((Gate) obj).open())
         {
-            MazeObject obj = maze.at(position);
-            boolean res = obj instanceof Gate && ((Gate) obj).open();
-            if (res)
-                for (Player p : players)
-                    p.onChange(position, obj.toByte());
-            return res;
+            for (ClientThread t : players.values())
+                t.onChange(position, obj.toByte());
+            return true;
         }
+        return false;
     }
 
-    public boolean take(Position position) throws IOException
+    public synchronized boolean take(Position position) throws IOException
     {
-        synchronized (maze)
+        MazeObject obj = maze.at(position);
+        if (obj instanceof Key && ((Key) obj).take())
         {
-            MazeObject obj = maze.at(position);
-            boolean res = obj instanceof Key && ((Key) obj).take();
-            if (res)
-                for (Player p : players)
-                    p.onChange(position, obj.toByte());
-            return res;
+            for (ClientThread t : players.values())
+                t.onChange(position, obj.toByte());
+            return true;
+        }
+        return false;
+    }
+
+    public synchronized void move(Mobile mobile) throws IOException
+    {
+        byte data = mobile.toByte();
+        Position pos = mobile.getPosition();
+
+        for (ClientThread t : players.values())
+            t.onChange(pos, data);
+
+        for (Player player : players.keySet())
+            if (player != mobile && player.getPosition().equals(pos))
+                kill(player);
+    }
+
+    public synchronized void move(Player player) throws IOException
+    {
+        for (Guard guard : guards)
+            if (guard.getPosition().equals(player.getPosition()))
+                kill(player);
+
+        if (maze.at(player.getPosition()) instanceof Finish)
+        {
+            winner = player;
+            for (Entry<Player, ClientThread> p : players.entrySet())
+                if (p.getKey().isAlive())
+                    p.getValue().onFinish(p.getKey() == winner);
+            end();
         }
     }
 
     private void kill(Player player) throws IOException
     {
-        synchronized (maze)
-        {
-            player.die();
-            for (Player p : players)
-                p.onChange(player.getPosition(), player.toByte());
+        player.die();
+        for (ClientThread t : players.values())
+            t.onInfo(-player.toByte(), player.getSteps());
 
-            for (Player p : players)
-                if (p.isAlive())
-                    return;
-            end();
-        }
-    }
-
-    public void move(Guard guard) throws IOException
-    {
-        synchronized (maze)
-        {
-            byte data = guard.toByte();
-            Position pos = guard.getPosition();
-
-            for (Player p : players)
-                p.onChange(pos, data);
-
-            for (Player player : players)
-                if (player.getPosition().equals(pos))
-                    kill(player);
-        }
-    }
-
-    public void move(Player player) throws IOException
-    {
-        synchronized (maze)
-        {
-            byte data = player.toByte();
-            Position pos = player.getPosition();
-
-            for (Player p : players)
-                p.onChange(pos, data);
-
-            for (Guard guard : guards)
-                if (guard.getPosition().equals(pos))
-                    kill(player);
-
-            for (Player p : players)
-                if (p != player && p.getPosition().equals(pos))
-                    kill(p);
-
-            if (maze.at(player.getPosition()) instanceof Finish)
-            {
-                winner = player;
-                for (Player p : players)
-                    if (p.isAlive())
-                        p.onFinish(p == winner);
-                end();
-            }
-        }
+        for (Player p : players.keySet())
+            if (p.isAlive())
+                return;
+        end();
     }
 
     private void end() throws IOException
     {
         scheduler.shutdownNow();
-        for (Player p : players)
-            p.onInfo();
+        for (ClientThread t : players.values())
+            for (Player p : players.keySet())
+                if (p.isAlive())
+                    t.onInfo(p.toByte(), p.getSteps());
     }
 
     @Override

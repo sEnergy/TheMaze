@@ -1,8 +1,6 @@
 package themaze.server;
 
-import java.io.File;
-import java.io.FilenameFilter;
-import java.io.IOException;
+import java.io.*;
 import java.net.ServerSocket;
 import java.security.InvalidParameterException;
 import java.util.ArrayList;

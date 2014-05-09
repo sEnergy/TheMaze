@@ -1,9 +1,7 @@
 package themaze.client;
 
 import themaze.Communication.Command;
-import themaze.client.panels.ConnectPanel;
-import themaze.client.panels.GamesPanel;
-import themaze.client.panels.MazePanel;
+import themaze.client.panels.*;
 
 import javax.swing.*;
 import java.awt.*;
@@ -138,5 +136,5 @@ public class MainFrame extends JFrame implements ActionListener
     public void onFinish(boolean winner) { maze.finish(winner); }
     public void onChange(byte row, byte column, byte data) { maze.change(row, column, data); }
     public void onStart() { maze.start(); }
-    public void onInfo(byte mobile, int steps) { maze.onInfo(mobile, steps); }
+    public void onInfo(int mobile, int steps) { maze.onInfo(mobile, steps); }
 }

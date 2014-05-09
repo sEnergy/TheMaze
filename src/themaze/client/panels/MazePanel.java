@@ -1,7 +1,7 @@
 package themaze.client.panels;
 
 import themaze.Position;
-import themaze.Position.Direction;
+import themaze.client.Mobile;
 
 import javax.swing.*;
 import java.awt.*;
@@ -16,6 +16,7 @@ public class MazePanel extends JPanel
     private int color, rows, columns;
     private byte[] data;
     private Map<Integer, Mobile> mobiles = new HashMap<>();
+    private Map<Integer, Mobile> corpses = new HashMap<>();
     private GameState state;
 
     public MazePanel()
@@ -77,25 +78,42 @@ public class MazePanel extends JPanel
             int dir = newData < 50 ? newData % 10 : 0;
             int m = newData - dir;
 
-            if (row == -1)
+            if (row < 0 || column < 0)
                 mobiles.remove(m);
             else
-                mobiles.put(m, new Mobile(row, column, dir));
-
-            if (column == -1)
-                if (m == color)
-                    state = GameState.Killed;
-                else
-                    System.out.printf("Player %d has been killed.\n", m / 10);
+            {
+                Mobile mobile = mobiles.get(m);
+                if (mobile == null)
+                    mobiles.put(m, mobile = new Mobile());
+                mobile.setDirection(dir);
+                mobile.setPosition(row, column);
+            }
         }
         repaint();
     }
 
-    public void onInfo(byte mobile, int steps)
+    public void onInfo(int data, int steps)
     {
-        int dir = mobile < 50 ? mobile % 10 : 0;
-        int m = mobile - dir;
-        mobiles.get(m).steps = steps;
+        boolean dead = data < 0;
+        data = Math.abs(data);
+        int dir = data < 50 ? data % 10 : 0;
+        int m = data - dir;
+
+        Mobile mobile;
+        if (dead)
+        {
+            mobile = mobiles.remove(m);
+            corpses.put(m, mobile);
+            if (m == color)
+                state = GameState.Killed;
+            else
+                System.out.printf("Player %d has been killed.\n", m / 10);
+        }
+        else
+            mobile = mobiles.get(m);
+
+        mobile.setInfo(steps);
+        repaint();
     }
 
     @Override
@@ -115,18 +133,18 @@ public class MazePanel extends JPanel
         for (Map.Entry<Integer, Mobile> entry : mobiles.entrySet())
         {
             Mobile mobile = entry.getValue();
-            int r = mobile.position.row;
-            int c = mobile.position.column;
+            int r = mobile.getPosition().row;
+            int c = mobile.getPosition().column;
             int m = entry.getKey();
             if (m >= 50)
             {
                 g.setColor(Color.RED);
-                g.fillOval(c * 20, r * 20, 20, 20);
+                g.drawOval(c * 20, r * 20, 20, 20);
             }
             else
             {
                 g.drawImage(images.get(m), c * 20, r * 20, null);
-                g.drawImage(images.get(100 + mobile.dir.ordinal()), c * 20, r * 20, null);
+                g.drawImage(images.get(100 + mobile.getDirection().ordinal()), c * 20, r * 20, null);
             }
             if (m == color)
             {
@@ -158,11 +176,20 @@ public class MazePanel extends JPanel
     public String getToolTipText(MouseEvent event)
     {
         for (Map.Entry<Integer, Mobile> entry : mobiles.entrySet())
+            if (entry.getKey() < 50)
+            {
+                Mobile mobile = entry.getValue();
+                Position position = new Position(event.getY() / 20, event.getX() / 20);
+                if (position.equals(mobile.getPosition()))
+                    return mobile.toString();
+            }
+
+        for (Map.Entry<Integer, Mobile> entry : corpses.entrySet())
         {
             Mobile mobile = entry.getValue();
             Position position = new Position(event.getY() / 20, event.getX() / 20);
-            if (position.equals(mobile.position) && mobile.steps != 0)
-                return String.format("Steps: %d", mobile.steps);
+            if (position.equals(mobile.getPosition()))
+                return mobile.toString();
         }
         return null;
     }
@@ -170,18 +197,5 @@ public class MazePanel extends JPanel
     private enum GameState
     {
         Init, Started, Killed, Won, Lost
-    }
-
-    private class Mobile
-    {
-        public final Position position;
-        public final Direction dir;
-        public int steps;
-
-        private Mobile(int row, int column, int direction)
-        {
-            position = new Position(row, column);
-            dir = Direction.values()[direction];
-        }
     }
 }

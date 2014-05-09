@@ -21,17 +21,13 @@ public class Guard extends Mobile
     public byte toByte() { return (byte) (50 + index); }
 
     @Override
-    public void step() throws IOException
+    public boolean step() throws IOException
     {
         synchronized (game)
         {
             int dir = new Random().nextInt(Direction.values().length);
-            Position pos = position.add(Direction.values()[dir]);
-            if (game.isEnterable(pos))
-            {
-                position = pos;
-                game.move(this);
-            }
+            direction = Direction.values()[dir];
+            return super.step();
         }
     }
 }

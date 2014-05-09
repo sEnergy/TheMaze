@@ -59,19 +59,16 @@ public class ClientThread extends Thread
     }
 
     public void onStart() throws IOException
-    { comm.sendCmd(Command.Close, 0); }
+    { comm.sendBytes(Command.Close, 0); }
 
     public void onFinish(boolean winner) throws IOException
-    { comm.sendCmd(Command.Close, winner ? 1 : 2); }
+    { comm.sendBytes(Command.Close, winner ? 1 : 2); }
 
     public void onChange(Position position, byte newByte) throws IOException
-    { comm.sendCmd(Command.Change, position.row, position.column, newByte); }
+    { comm.sendBytes(Command.Change, position.row, position.column, newByte); }
 
-    public void onInfo(byte b, int steps) throws IOException
-    { comm.sendData(Command.Info, b, steps); }
-
-    public void sendCmd(Command cmd, int... data) throws IOException
-    { comm.sendCmd(cmd, data); }
+    public void onInfo(int data, int steps) throws IOException
+    { comm.sendInts(Command.Info, data, steps); }
 
     private void handleCmd(Command cmd) throws IOException, IllegalAccessException, InstantiationException
     {
@@ -89,13 +86,17 @@ public class ClientThread extends Thread
                 Server.resendGames(this);
                 break;
             case Keys:
-                comm.sendCmd(Command.Keys, player.getKeys());
+                comm.sendBytes(Command.Keys, player.getKeys());
                 break;
             case Take:
-                player.take();
+                byte take = player.take();
+                if (take >= 0)
+                    comm.sendBytes(Command.Take, take);
                 break;
             case Open:
-                player.open();
+                byte open = player.open();
+                if (open >= 0)
+                    comm.sendBytes(Command.Open, open);
                 break;
             case Left:
                 player.turnLeft();
@@ -104,7 +105,8 @@ public class ClientThread extends Thread
                 player.turnRight();
                 break;
             case Step:
-                player.step();
+                if (!player.step())
+                    comm.sendBytes(Command.Step);
                 break;
             case Go:
                 player.go();
