@@ -1,63 +1,41 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
 <project name="themaze" basedir=".">
+    <target name="compile">
+        <mkdir dir="build"/>
+        <javac srcdir="src" destdir="build"/>
+        <mkdir dir="doc"/>
+        <javadoc sourcepath="src" destdir="doc"/>
 
-<target name="init">
-    <mkdir dir="build/classes"/>
-</target>
+        <mkdir dir="dest-server"/>
+        <jar destfile="dest-server/ija2014-server.jar" basedir="build" excludes="**/client/**">
+            <manifest>
+                <attribute name="Main-Class" value="themaze.server.Server"/>
+            </manifest>
+        </jar>
+        <mkdir dir="dest-client"/>
+        <jar destfile="dest-client/ija2014-client.jar" basedir="build" excludes="**/server/**">
+            <manifest>
+                <attribute name="Main-Class" value="themaze.client.MainFrame"/>
+            </manifest>
+        </jar>
+    </target>
 
-<target name="compile" depends="init">
-	<javac srcdir="src" classpath="lib/junit-4.10.jar" destdir="build/classes" includeantruntime="false"/>
-    <javadoc destdir="doc">
-        <fileset dir="src">
-            <exclude name="themaze/TestClass.java"/>
-        </fileset>
-    </javadoc>
-</target>
+    <target name="clean">
+        <delete includeemptydirs="true">
+            <fileset dir="build" includes="**/*"/>
+            <fileset dir="doc" includes="**/*"/>
+            <fileset dir="dest-server" includes="**/*"/>
+            <fileset dir="dest-client" includes="**/*"/>
+        </delete>
+    </target>
 
-<target name="run" depends="compile">
-    <java classname="themaze.TheMaze">
-       	<classpath>
-           	<pathelement location="build/classes/"/>
-       	</classpath>
-    </java>
-</target>
-
-<target name="pre-test">
-	<mkdir dir="build/classes/examples"/>
-	<copy file="examples/test.maz" tofile="build/classes/examples/test.maz"/>
-</target>
-
-<target name="test-run" depends="pre-test">
-        <exec executable="java" dir="build/classes/" >
-            <arg value="-classpath" />
-            <arg value=".:../../lib/junit-4.10.jar" />
-            <arg value="org.junit.runner.JUnitCore" />
-            <arg value="themaze.TestClass" />
-        </exec>
-</target>
-
-<target name="post-test">
-	<sleep seconds="3"/>
-	<delete dir="build/classes/examples"/>
-</target>
-
-<target name="test" depends="compile,pre-test,test-run,post-test"/>
-
-<target name="clean">
-	<delete includeemptydirs="true">
-    	<fileset dir="build" includes="**/*"/>
-  	</delete>
-	<delete includeemptydirs="true">
-    	<fileset dir="dest-client" includes="**/*"/>
-  	</delete>
-	<delete includeemptydirs="true">
-    	<fileset dir="dest-server" includes="**/*"/>
-  	</delete>
-</target>
-
-<target name="jar" depends="compile">
-	<jar destfile="dest-server/ija2014-server.jar" basedir="build/classes" excludes="**/TestClass.class"/>
-</target>
-
+    <target name="run" depends="compile">
+        <parallel>
+            <java jar="dest-server/ija2014-server.jar" fork="true" dir="${basedir}">
+                <arg value="50000"/>
+            </java>
+            <java jar="dest-client/ija2014-client.jar" fork="true" dir="${basedir}"/>
+            <java jar="dest-client/ija2014-client.jar" fork="true" dir="${basedir}"/>
+        </parallel>
+    </target>
 </project>

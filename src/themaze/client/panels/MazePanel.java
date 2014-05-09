@@ -23,22 +23,22 @@ public class MazePanel extends JPanel
     {
         super();
 
-        images.put(0, new ImageIcon("lib/gui/floor.png").getImage());
-        images.put(1, new ImageIcon("lib/gui/wall.png").getImage());
-        images.put(2, new ImageIcon("lib/gui/gate_closed.png").getImage());
-        images.put(3, new ImageIcon("lib/gui/gate_open.png").getImage());
-        images.put(4, new ImageIcon("lib/gui/key.png").getImage());
-        images.put(5, new ImageIcon("lib/gui/finish.png").getImage());
+        images.put(0, new ImageIcon("lib/floor.png").getImage());
+        images.put(1, new ImageIcon("lib/wall.png").getImage());
+        images.put(2, new ImageIcon("lib/gate_closed.png").getImage());
+        images.put(3, new ImageIcon("lib/gate_open.png").getImage());
+        images.put(4, new ImageIcon("lib/key.png").getImage());
+        images.put(5, new ImageIcon("lib/finish.png").getImage());
 
-        images.put(10, new ImageIcon("lib/gui/pl1.png").getImage());
-        images.put(20, new ImageIcon("lib/gui/pl1.png").getImage());
-        images.put(30, new ImageIcon("lib/gui/pl1.png").getImage());
-        images.put(40, new ImageIcon("lib/gui/pl1.png").getImage());
+        images.put(10, new ImageIcon("lib/pl1.png").getImage());
+        images.put(20, new ImageIcon("lib/pl1.png").getImage());
+        images.put(30, new ImageIcon("lib/pl1.png").getImage());
+        images.put(40, new ImageIcon("lib/pl1.png").getImage());
 
-        images.put(100, new ImageIcon("lib/gui/dir_up.png").getImage());
-        images.put(101, new ImageIcon("lib/gui/dir_right.png").getImage());
-        images.put(102, new ImageIcon("lib/gui/dir_down.png").getImage());
-        images.put(103, new ImageIcon("lib/gui/dir_left.png").getImage());
+        images.put(100, new ImageIcon("lib/dir_up.png").getImage());
+        images.put(101, new ImageIcon("lib/dir_right.png").getImage());
+        images.put(102, new ImageIcon("lib/dir_down.png").getImage());
+        images.put(103, new ImageIcon("lib/dir_left.png").getImage());
 
         setToolTipText("");
     }
