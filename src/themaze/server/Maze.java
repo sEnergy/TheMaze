@@ -15,7 +15,7 @@ public class Maze
     private final String name;
     private final MazeObject[][] maze;
 
-    public Maze(Maze m) throws IllegalAccessException, InstantiationException
+    public Maze(Maze m)
     {
         this.rows = m.rows;
         this.columns = m.columns;
@@ -25,8 +25,7 @@ public class Maze
         maze = new MazeObject[rows][columns];
         for (byte r = 0; r < rows; r++)
             for (byte c = 0; c < columns; c++)
-                if (m.maze[r][c] != null)
-                    maze[r][c] = m.maze[r][c].getClass().newInstance();
+                maze[r][c] = cloneObject(m.maze[r][c]);
     }
 
     public Maze(File file) throws IOException
@@ -57,6 +56,15 @@ public class Maze
                     parseObject(r, c, data[c]);
             }
         }
+    }
+
+    private MazeObject cloneObject(MazeObject object)
+    {
+        if (object instanceof Gate)
+            return new Gate();
+        if (object instanceof Key)
+            return new Key();
+        return object;
     }
 
     private void parseObject(byte row, byte column, String type) throws IOException

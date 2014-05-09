@@ -16,8 +16,7 @@ public class Communication implements Closeable
         input = new DataInputStream(socket.getInputStream());
     }
 
-    public Command readCommand() throws IOException { return Command.values()[input.read()]; }
-
+    public Command readCommand() throws IOException { return Command.values()[input.readByte()]; }
     public String readString() throws IOException { return input.readUTF(); }
     public byte readByte() throws IOException { return input.readByte(); }
     public int readInt() throws IOException { return input.readInt(); }

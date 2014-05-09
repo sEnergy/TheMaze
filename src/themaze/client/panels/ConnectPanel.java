@@ -6,7 +6,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.IOException;
 
 public class ConnectPanel extends JPanel implements ActionListener
 {
@@ -52,6 +51,5 @@ public class ConnectPanel extends JPanel implements ActionListener
             ((MainFrame) SwingUtilities.getRoot(this)).connect(server.getText(), p);
         }
         catch (NumberFormatException ex) { System.out.println("Invalid port!"); }
-        catch (IOException ex) { ex.printStackTrace(); }
     }
 }

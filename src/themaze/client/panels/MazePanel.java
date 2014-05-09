@@ -13,10 +13,10 @@ import java.util.Map;
 public class MazePanel extends JPanel
 {
     private final Map<Integer, Image> images = new HashMap<>();
+    private final Map<Integer, Mobile> mobiles = new HashMap<>();
+    private final Map<Integer, Mobile> corpses = new HashMap<>();
     private int color, rows, columns;
     private byte[] data;
-    private Map<Integer, Mobile> mobiles = new HashMap<>();
-    private Map<Integer, Mobile> corpses = new HashMap<>();
     private GameState state;
 
     public MazePanel()

@@ -31,13 +31,12 @@ public class ClientThread extends Thread
             while (true)
                 handleCmd(comm.readCommand());
         }
-        catch (Exception e) { e.printStackTrace(); }
-        finally
+        catch (IOException e)
         {
             Server.removeClient(this);
             if (player != null)
                 try { player.leave(); }
-                catch (IOException e) { e.printStackTrace(); }
+                catch (IOException ex) { ex.printStackTrace(); }
         }
     }
 
@@ -70,7 +69,7 @@ public class ClientThread extends Thread
     public void onInfo(int data, int steps) throws IOException
     { comm.sendInts(Command.Info, data, steps); }
 
-    private void handleCmd(Command cmd) throws IOException, IllegalAccessException, InstantiationException
+    private void handleCmd(Command cmd) throws IOException
     {
         switch (cmd)
         {

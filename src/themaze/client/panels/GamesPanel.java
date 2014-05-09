@@ -6,7 +6,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.IOException;
 import java.util.Hashtable;
 
 public class GamesPanel extends JPanel implements ActionListener
@@ -79,8 +78,7 @@ public class GamesPanel extends JPanel implements ActionListener
             if (i == -1)
                 System.out.println("You have to select some maze!");
             else
-                try { ((MainFrame) SwingUtilities.getRoot(this)).newGame(i, players.getValue(), speed.getValue()); }
-                catch (IOException ex) { ex.printStackTrace(); }
+                ((MainFrame) SwingUtilities.getRoot(this)).newGame(i, players.getValue(), speed.getValue());
         }
         else if (e.getActionCommand().equals("Join Game"))
         {
@@ -88,8 +86,7 @@ public class GamesPanel extends JPanel implements ActionListener
             if (i == -1)
                 System.out.println("You have to select some game!");
             else
-                try { ((MainFrame) SwingUtilities.getRoot(this)).joinGame(i); }
-                catch (IOException ex) { ex.printStackTrace(); }
+                ((MainFrame) SwingUtilities.getRoot(this)).joinGame(i);
         }
     }
 }

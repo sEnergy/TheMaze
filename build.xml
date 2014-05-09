@@ -2,7 +2,7 @@
 <project name="themaze" basedir=".">
     <target name="compile">
         <mkdir dir="build"/>
-        <javac srcdir="src" destdir="build"/>
+        <javac srcdir="src" destdir="build" includeantruntime="false"/>
         <mkdir dir="doc"/>
         <javadoc sourcepath="src" destdir="doc"/>
 

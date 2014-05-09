@@ -22,6 +22,7 @@ public class ServerThread extends Thread
     public void newGame(int id, int players, int speed) throws IOException
     { comm.sendBytes(Command.Game, id, players, speed); }
 
+    @Override
     public void run()
     {
         try
@@ -29,6 +30,18 @@ public class ServerThread extends Thread
             while (true)
                 handleCmd(comm.readCommand());
         }
+        catch (IOException e)
+        {
+            javax.swing.SwingUtilities.invokeLater(new Runnable()
+            {
+                public void run() { frame.disconnect(); }
+            });
+        }
+    }
+
+    public void close()
+    {
+        try { comm.close(); }
         catch (IOException e) { e.printStackTrace(); }
     }
 

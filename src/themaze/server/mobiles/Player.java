@@ -35,7 +35,7 @@ public class Player extends Mobile
         }
     }
 
-    public void die() throws IOException
+    public void die()
     {
         synchronized (game)
         {

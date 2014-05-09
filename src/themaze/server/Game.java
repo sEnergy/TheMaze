@@ -21,7 +21,7 @@ public class Game
     private Player winner;
     private boolean started;
 
-    public Game(Maze maze, int players, int speed) throws IOException
+    public Game(Maze maze, int players, int speed)
     {
         this.maze = maze;
         this.speed = speed * 500;

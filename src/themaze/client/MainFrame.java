@@ -81,33 +81,69 @@ public class MainFrame extends JFrame implements ActionListener
     {
         try
         {
-            input.setText(null);
-            Command[] cmd = Command.values();
-            for (int i = Command.Close.ordinal(); i < cmd.length; i++)
-                if (cmd[i].name().equalsIgnoreCase(e.getActionCommand().trim()))
-                {
-                    if (maze.getParent() != null && (cmd[i] == Command.Close || maze.isReady()))
-                        server.sendCmd(cmd[i]);
-                    return;
-                }
-            System.out.println("Invalid command!");
+            if (e.getSource() == input)
+                input.setText(null);
+
+            Command cmd = getCmd(e.getActionCommand());
+            if (cmd == null)
+                System.out.println("Invalid command!");
+            else if (maze.getParent() != null && (cmd == Command.Close || maze.isReady()))
+                server.sendCmd(cmd);
+            else if (games.getParent() != null && cmd == Command.Close)
+                disconnect();
         }
-        catch (IOException ex) { ex.printStackTrace(); }
+        catch (IOException ex) { disconnect(); }
     }
 
-    public void joinGame(int id) throws IOException { server.joinGame(id); }
-    public void newGame(int id, int players, int speed) throws IOException
-    { server.newGame(id, players, speed); }
-
-    public void connect(String host, int port) throws IOException
+    private Command getCmd(String str)
     {
-        server = new ServerThread(this, host, port);
-        server.start();
-        remove(connect);
-        add(games);
+        Command[] cmd = Command.values();
+        for (int i = Command.Close.ordinal(); i < cmd.length; i++)
+            if (cmd[i].name().equalsIgnoreCase(str.trim()))
+                return cmd[i];
+        return null;
+    }
+
+    public void joinGame(int id)
+    {
+        try { server.joinGame(id); }
+        catch (IOException ex) { disconnect(); }
+    }
+
+    public void newGame(int id, int players, int speed)
+    {
+        try { server.newGame(id, players, speed); }
+        catch (IOException ex) { disconnect(); }
+    }
+
+    public void connect(String host, int port)
+    {
+        try
+        {
+            server = new ServerThread(this, host, port);
+            server.start();
+            remove(connect);
+            add(games);
+            repaint();
+            pack();
+            System.out.println("Connected.");
+        }
+        catch (IOException ex) { System.out.println("Connection failed!"); }
+    }
+
+    public void disconnect()
+    {
+        if (server != null)
+        {
+            server.close();
+            server = null;
+            System.out.println("Disconnected.");
+        }
+        remove(games);
+        remove(maze);
+        add(connect);
         repaint();
         pack();
-        System.out.println("Connected.");
     }
 
     public void setMaze(byte color, byte rows, byte columns, byte[] data)
