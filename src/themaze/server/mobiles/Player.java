@@ -30,20 +30,20 @@ public class Player extends Mobile
     {
         synchronized (game)
         {
-            stop();
             position = Position.Invalid;
+            stop();
             game.leave(this, color);
         }
     }
 
-    public void die()
+    public void die() throws IOException
     {
         synchronized (game)
         {
             if (isAlive())
             {
-                stop();
                 position = Position.Invalid;
+                stop();
             }
         }
     }
@@ -96,6 +96,17 @@ public class Player extends Mobile
             direction = Direction.values()[i % Direction.values().length];
             game.move((Mobile) this);
         }
+    }
+
+    @Override
+    public boolean stop() throws IOException
+    {
+        synchronized (game)
+        {
+            if (super.stop() && isAlive())
+                game.stop(this);
+        }
+        return super.stop();
     }
 
     @Override

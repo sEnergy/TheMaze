@@ -69,6 +69,9 @@ public class ClientThread extends Thread
     public void onInfo(int data, int steps) throws IOException
     { comm.sendInts(Command.Info, data, steps); }
 
+    public void onStop() throws IOException
+    { comm.sendInts(Command.Stop); }
+
     private void handleCmd(Command cmd) throws IOException
     {
         switch (cmd)

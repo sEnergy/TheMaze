@@ -33,7 +33,7 @@ public abstract class Mobile implements Runnable
         }
     }
 
-    public void stop()
+    public boolean stop() throws IOException
     {
         synchronized (game)
         {
@@ -41,7 +41,9 @@ public abstract class Mobile implements Runnable
             {
                 task.cancel(false);
                 task = null;
+                return true;
             }
+            return false;
         }
     }
 

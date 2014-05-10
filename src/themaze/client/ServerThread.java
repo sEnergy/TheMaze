@@ -139,6 +139,10 @@ public class ServerThread extends Thread
             case Step:
                 System.out.println("You can't go that way.");
                 break;
+
+            case Stop:
+                System.out.println("You stopped.");
+                break;
         }
     }
 }

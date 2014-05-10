@@ -12,12 +12,19 @@
                 <attribute name="Main-Class" value="themaze.server.Server"/>
             </manifest>
         </jar>
+        <copy todir="dest-server/">
+            <fileset dir="examples" includes="**/*.maz"/>
+        </copy>
+
         <mkdir dir="dest-client"/>
         <jar destfile="dest-client/ija2014-client.jar" basedir="build" excludes="**/server/**">
             <manifest>
                 <attribute name="Main-Class" value="themaze.client.MainFrame"/>
             </manifest>
         </jar>
+        <copy todir="dest-client/">
+            <fileset dir="lib" includes="**/*.png"/>
+        </copy>
     </target>
 
     <target name="clean">
@@ -31,11 +38,11 @@
 
     <target name="run" depends="compile">
         <parallel>
-            <java jar="dest-server/ija2014-server.jar" fork="true" dir="${basedir}">
+            <java jar="dest-server/ija2014-server.jar" fork="true" dir="dest-server">
                 <arg value="50000"/>
             </java>
-            <java jar="dest-client/ija2014-client.jar" fork="true" dir="${basedir}"/>
-            <java jar="dest-client/ija2014-client.jar" fork="true" dir="${basedir}"/>
+            <java jar="dest-client/ija2014-client.jar" fork="true" dir="dest-client"/>
+            <java jar="dest-client/ija2014-client.jar" fork="true" dir="dest-client"/>
         </parallel>
     </target>
 </project>

@@ -93,6 +93,9 @@ public class Game
     public ScheduledFuture<?> go(Mobile mobile)
     { return scheduler.scheduleAtFixedRate(mobile, 0, speed, TimeUnit.MILLISECONDS); }
 
+    public synchronized void stop(Player player) throws IOException
+    { players.get(player).onStop(); }
+
     public synchronized boolean open(Position position) throws IOException
     {
         MazeObject obj = maze.at(position);

@@ -16,6 +16,8 @@ public class Server
         int port;
         try
         {
+            if (args.length < 1)
+                throw new NumberFormatException();
             port = Integer.parseInt(args[0]);
             if (port < 0 || port > 0xFFFF)
                 throw new NumberFormatException();
@@ -41,7 +43,7 @@ public class Server
 
     private static File[] getMazeFiles()
     {
-        return new File("examples").listFiles(new FilenameFilter()
+        return new File(".").listFiles(new FilenameFilter()
         {
             public boolean accept(File dir, String name)
             { return name.endsWith(".maz"); }
