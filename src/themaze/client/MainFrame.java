@@ -1,6 +1,7 @@
 package themaze.client;
 
 import themaze.Communication.Command;
+import themaze.Position;
 import themaze.client.panels.*;
 
 import javax.swing.*;
@@ -11,16 +12,16 @@ import java.io.IOException;
 
 public class MainFrame extends JFrame implements ActionListener
 {
+    private static MainFrame instance;
     private final ConnectPanel connect = new ConnectPanel();
     private final GamesPanel games = new GamesPanel();
     private final MazePanel maze = new MazePanel();
     private final JTextField input = new JTextField();
     private ServerThread server;
 
-    public MainFrame()
+    private MainFrame()
     {
         super("The Maze");
-        setLocationRelativeTo(null);
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         setLayout(new FlowLayout());
         setSize(600, 400);
@@ -45,14 +46,16 @@ public class MainFrame extends JFrame implements ActionListener
         add(panel);
         add(connect);
         pack();
+        setLocationRelativeTo(null);
         setVisible(true);
     }
 
+    public static MainFrame getInstance() { return instance; }
     public static void main(String[] args)
     {
         javax.swing.SwingUtilities.invokeLater(new Runnable()
         {
-            public void run() { new MainFrame(); }
+            public void run() { instance = new MainFrame(); }
         });
     }
 
@@ -79,20 +82,19 @@ public class MainFrame extends JFrame implements ActionListener
     @Override
     public void actionPerformed(ActionEvent e)
     {
-        try
-        {
-            if (e.getSource() == input)
-                input.setText(null);
+        if (e.getSource() == input)
+            input.setText(null);
 
-            Command cmd = getCmd(e.getActionCommand());
-            if (cmd == null)
-                System.out.println("Invalid command!");
-            else if (maze.getParent() != null && (cmd == Command.Close || maze.isReady()))
-                server.sendCmd(cmd);
-            else if (games.getParent() != null && cmd == Command.Close)
-                disconnect();
+        Command cmd = getCmd(e.getActionCommand());
+        if (cmd == null)
+            System.out.println("Invalid command!");
+        else if (maze.getParent() != null && (cmd == Command.Close || maze.isReady()))
+        {
+            try { server.sendCmd(cmd);}
+            catch (IOException ex) { disconnect(); }
         }
-        catch (IOException ex) { disconnect(); }
+        else if (games.getParent() != null && cmd == Command.Close)
+            disconnect();
     }
 
     private Command getCmd(String str)
@@ -142,6 +144,7 @@ public class MainFrame extends JFrame implements ActionListener
         remove(games);
         remove(maze);
         add(connect);
+        setTitle("The Maze");
         repaint();
         pack();
     }
@@ -164,13 +167,14 @@ public class MainFrame extends JFrame implements ActionListener
             remove(maze);
             add(games);
             System.out.println("Game closed.");
+            setTitle("The Maze");
             repaint();
             pack();
         }
     }
 
-    public void onFinish(boolean winner) { maze.finish(winner); }
-    public void onChange(byte row, byte column, byte data) { maze.change(row, column, data); }
+    public void onFinish(byte winner) { maze.finish(winner); }
+    public void onChange(Position position, byte data) { maze.change(position, data); }
     public void onStart() { maze.start(); }
     public void onInfo(int mobile, int steps) { maze.onInfo(mobile, steps); }
 }

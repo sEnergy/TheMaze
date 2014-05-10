@@ -48,7 +48,7 @@ public class ConnectPanel extends JPanel implements ActionListener
         try
         {
             int p = Integer.parseInt(port.getText());
-            ((MainFrame) SwingUtilities.getRoot(this)).connect(server.getText(), p);
+            MainFrame.getInstance().connect(server.getText(), p);
         }
         catch (NumberFormatException ex) { System.out.println("Invalid port!"); }
     }

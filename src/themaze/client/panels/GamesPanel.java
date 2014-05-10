@@ -78,7 +78,7 @@ public class GamesPanel extends JPanel implements ActionListener
             if (i == -1)
                 System.out.println("You have to select some maze!");
             else
-                ((MainFrame) SwingUtilities.getRoot(this)).newGame(i, players.getValue(), speed.getValue());
+                MainFrame.getInstance().newGame(i, players.getValue(), speed.getValue());
         }
         else if (e.getActionCommand().equals("Join Game"))
         {
@@ -86,7 +86,7 @@ public class GamesPanel extends JPanel implements ActionListener
             if (i == -1)
                 System.out.println("You have to select some game!");
             else
-                ((MainFrame) SwingUtilities.getRoot(this)).joinGame(i);
+                MainFrame.getInstance().joinGame(i);
         }
     }
 }

@@ -84,7 +84,7 @@ public class Communication implements Closeable
         Maze,   //      byte rows, byte columns, byte[] maze                ----------
         Change, //      byte row, column, data                              ----------
         Info,   //      byte data, int steps                                ----------
-        Close,  //      byte 0/1/2 (start/won/lost)
+        Close,  //      byte winner (0 = start)
         Keys,   //      byte keys
         Take,   //      byte 0/1 (success/fail)
         Open,   //      byte 0/1/2 (success/no key/no gate)

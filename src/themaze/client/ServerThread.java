@@ -2,6 +2,7 @@ package themaze.client;
 
 import themaze.Communication;
 import themaze.Communication.Command;
+import themaze.Position;
 
 import java.io.IOException;
 import java.net.Socket;
@@ -86,7 +87,7 @@ public class ServerThread extends Thread
                 final byte data = comm.readByte();
                 javax.swing.SwingUtilities.invokeLater(new Runnable()
                 {
-                    public void run() { frame.onChange(row, column, data); }
+                    public void run() { frame.onChange(new Position(row, column), data); }
                 });
                 break;
 
@@ -100,15 +101,15 @@ public class ServerThread extends Thread
                 break;
 
             case Close:
-                final byte status = comm.readByte();
+                final byte winner = comm.readByte();
                 javax.swing.SwingUtilities.invokeLater(new Runnable()
                 {
                     public void run()
                     {
-                        if (status == 0)
+                        if (winner == 0)
                             frame.onStart();
                         else
-                            frame.onFinish(status == 1);
+                            frame.onFinish(winner);
                     }
                 });
                 break;

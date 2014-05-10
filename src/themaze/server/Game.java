@@ -66,6 +66,7 @@ public class Game
     {
         players.remove(player);
         colors.add(color);
+        maze.starts.add(player.getPosition());
         if (players.isEmpty())
         {
             scheduler.shutdownNow();
@@ -73,16 +74,13 @@ public class Game
         }
         else if (started && winner == null)
         {
-            boolean end = true;
             for (Entry<Player, ClientThread> p : players.entrySet())
             {
                 p.getValue().onChange(player.getPosition(), player.toByte());
                 if (p.getKey().isAlive())
-                    end = false;
+                    return;
             }
-
-            if (end)
-                end();
+            end();
         }
     }
 
@@ -141,9 +139,6 @@ public class Game
         if (maze.at(player.getPosition()) instanceof Finish)
         {
             winner = player;
-            for (Entry<Player, ClientThread> p : players.entrySet())
-                if (p.getKey().isAlive())
-                    p.getValue().onFinish(p.getKey() == winner);
             end();
         }
     }
@@ -164,9 +159,12 @@ public class Game
     {
         scheduler.shutdownNow();
         for (ClientThread t : players.values())
+        {
             for (Player p : players.keySet())
                 if (p.isAlive())
                     t.onInfo(p.toByte(), p.getSteps());
+            t.onFinish(winner == null ? -1 : winner.toByte());
+        }
     }
 
     @Override

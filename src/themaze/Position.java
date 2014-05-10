@@ -2,6 +2,7 @@ package themaze;
 
 public class Position
 {
+    public static final Position Invalid = new Position(-1, -1);
     public final byte row, column;
     public Position(int row, int column)
     {
@@ -24,6 +25,8 @@ public class Position
         }
         return null;
     }
+
+    public boolean isValid() { return row >= 0 && column >= 0; }
 
     @Override
     public int hashCode() { return row * column; }

@@ -1,20 +1,24 @@
 package themaze.client.panels;
 
 import themaze.Position;
+import themaze.client.MainFrame;
 import themaze.client.Mobile;
 
 import javax.swing.*;
+import javax.swing.Timer;
 import java.awt.*;
-import java.awt.event.MouseEvent;
+import java.awt.event.*;
 import java.awt.geom.Rectangle2D;
-import java.util.HashMap;
-import java.util.Map;
+import java.text.DateFormat;
+import java.util.*;
 
-public class MazePanel extends JPanel
+public class MazePanel extends JPanel implements ActionListener
 {
     private final Map<Integer, Image> images = new HashMap<>();
     private final Map<Integer, Mobile> mobiles = new HashMap<>();
     private final Map<Integer, Mobile> corpses = new HashMap<>();
+    private final Timer timer = new Timer(1000, this);
+    private long start;
     private int color, rows, columns;
     private byte[] data;
     private GameState state;
@@ -41,6 +45,7 @@ public class MazePanel extends JPanel
         images.put(103, new ImageIcon("lib/dir_left.png").getImage());
 
         setToolTipText("");
+        timer.setInitialDelay(0);
     }
 
     public boolean isReady() { return state == GameState.Started; }
@@ -60,34 +65,38 @@ public class MazePanel extends JPanel
     public void start()
     {
         state = GameState.Started;
+        start = System.currentTimeMillis();
+        timer.restart();
         System.out.println("Game started.");
     }
 
-    public void finish(boolean winner)
+    public void finish(byte winner)
     {
-        state = winner ? GameState.Won : GameState.Lost;
+        if (state == GameState.Started)
+            state = winner / 10 == color / 10 ? GameState.Won : GameState.Lost;
+        timer.stop();
         repaint();
     }
 
-    public void change(int row, int column, byte newData)
+    public void change(Position pos, byte newData)
     {
         if (newData < 10)
-            data[column + row * columns] = newData;
+            data[pos.column + pos.row * columns] = newData;
         else
         {
             int dir = newData < 50 ? newData % 10 : 0;
             int m = newData - dir;
 
-            if (row < 0 || column < 0)
-                mobiles.remove(m);
-            else
+            if (pos.isValid())
             {
                 Mobile mobile = mobiles.get(m);
                 if (mobile == null)
                     mobiles.put(m, mobile = new Mobile());
                 mobile.setDirection(dir);
-                mobile.setPosition(row, column);
+                mobile.setPosition(pos);
             }
+            else
+                mobiles.remove(m);
         }
         repaint();
     }
@@ -112,7 +121,7 @@ public class MazePanel extends JPanel
         else
             mobile = mobiles.get(m);
 
-        mobile.setInfo(steps);
+        mobile.setInfo(steps, System.currentTimeMillis() - start);
         repaint();
     }
 
@@ -175,11 +184,11 @@ public class MazePanel extends JPanel
     @Override
     public String getToolTipText(MouseEvent event)
     {
+        Position position = new Position(event.getY() / 20, event.getX() / 20);
         for (Map.Entry<Integer, Mobile> entry : mobiles.entrySet())
             if (entry.getKey() < 50)
             {
                 Mobile mobile = entry.getValue();
-                Position position = new Position(event.getY() / 20, event.getX() / 20);
                 if (position.equals(mobile.getPosition()))
                     return mobile.toString();
             }
@@ -187,11 +196,24 @@ public class MazePanel extends JPanel
         for (Map.Entry<Integer, Mobile> entry : corpses.entrySet())
         {
             Mobile mobile = entry.getValue();
-            Position position = new Position(event.getY() / 20, event.getX() / 20);
             if (position.equals(mobile.getPosition()))
                 return mobile.toString();
         }
         return null;
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent e)
+    {
+        if (getParent() != null)
+        {
+            long diff = System.currentTimeMillis() - start;
+            DateFormat format = DateFormat.getTimeInstance();
+            format.setTimeZone(TimeZone.getTimeZone("UTC"));
+            MainFrame.getInstance().setTitle("The Maze - " + format.format(new Date(diff)));
+        }
+        else
+            timer.stop();
     }
 
     private enum GameState

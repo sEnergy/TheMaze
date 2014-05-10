@@ -23,6 +23,7 @@ public class Player extends Mobile
             }
     }
 
+    public boolean isAlive() { return position.isValid(); }
     public byte getKeys() { return keys; }
 
     public void leave() throws IOException
@@ -30,7 +31,7 @@ public class Player extends Mobile
         synchronized (game)
         {
             stop();
-            position = new Position(-1, 0);
+            position = Position.Invalid;
             game.leave(this, color);
         }
     }
@@ -42,7 +43,7 @@ public class Player extends Mobile
             if (isAlive())
             {
                 stop();
-                position = new Position(0, -1);
+                position = Position.Invalid;
             }
         }
     }
@@ -81,13 +82,29 @@ public class Player extends Mobile
         }
     }
 
+    public void turnLeft() throws IOException { turn(-1); }
+    public void turnRight() throws IOException { turn(1); }
+    private void turn(int dir) throws IOException
+    {
+        synchronized (game)
+        {
+            if (!isAlive())
+                return;
+            int i = direction.ordinal() + dir;
+            while (i < 0)
+                i = Direction.values().length - 1;
+            direction = Direction.values()[i % Direction.values().length];
+            game.move((Mobile) this);
+        }
+    }
+
     @Override
     public boolean step() throws IOException
     {
         synchronized (game)
         {
             if (!isAlive())
-                return false;
+                return true;
             if (super.step())
             {
                 game.move(this);

@@ -60,8 +60,8 @@ public class ClientThread extends Thread
     public void onStart() throws IOException
     { comm.sendBytes(Command.Close, 0); }
 
-    public void onFinish(boolean winner) throws IOException
-    { comm.sendBytes(Command.Close, winner ? 1 : 2); }
+    public void onFinish(byte winner) throws IOException
+    { comm.sendBytes(Command.Close, winner); }
 
     public void onChange(Position position, byte newByte) throws IOException
     { comm.sendBytes(Command.Change, position.row, position.column, newByte); }

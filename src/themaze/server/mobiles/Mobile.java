@@ -23,7 +23,6 @@ public abstract class Mobile implements Runnable
 
     public Position getPosition() { return position; }
     public int getSteps() { return steps; }
-    public boolean isAlive() { return position.row >= 0 && position.column >= 0; }
 
     public void go()
     {
@@ -50,8 +49,6 @@ public abstract class Mobile implements Runnable
     {
         synchronized (game)
         {
-            if (!isAlive())
-                return true;
             Position pos = position.add(direction);
             if (game.isEnterable(pos))
             {
@@ -61,22 +58,6 @@ public abstract class Mobile implements Runnable
                 return true;
             }
             return false;
-        }
-    }
-
-    public void turnLeft() throws IOException { turn(-1); }
-    public void turnRight() throws IOException { turn(1); }
-    private void turn(int dir) throws IOException
-    {
-        synchronized (game)
-        {
-            if (!isAlive())
-                return;
-            int i = direction.ordinal() + dir;
-            while (i < 0)
-                i = Direction.values().length - 1;
-            direction = Direction.values()[i % Direction.values().length];
-            game.move(this);
         }
     }
 
