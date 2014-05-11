@@ -7,6 +7,14 @@ import themaze.Position;
 import java.io.IOException;
 import java.net.Socket;
 
+/**
+ * Vlákno pro komunikaci se serverem.
+ * Přijímá zprávy od serveru a přeposílá je do hlavního okna GUI.
+ * Obsahuje funkce pro odesílání příkazů serveru.
+ *
+ * @author Jaroslav Kubík
+ * @author Marcel Fiala
+ */
 public class ServerThread extends Thread
 {
     private final MainFrame frame;

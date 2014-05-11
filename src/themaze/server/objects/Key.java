@@ -4,6 +4,7 @@ package themaze.server.objects;
  * Třída reprezentující klíč.
  *
  * @author Jaroslav Kubík
+ * @author Marcel Fiala
  */
 public class Key extends MazeObject
 {

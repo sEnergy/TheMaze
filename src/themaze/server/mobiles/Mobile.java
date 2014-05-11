@@ -13,6 +13,7 @@ import java.util.concurrent.ScheduledFuture;
  * počet ušlých kroků a operace pro pohyb.
  *
  * @author Jaroslav Kubík
+ * @author Marcel Fiala
  */
 public abstract class Mobile implements Runnable
 {

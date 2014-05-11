@@ -8,6 +8,12 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Hashtable;
 
+/**
+ * Panel obsahující grafické rozhraní pro vytvoření hry nebo připojení k rozehrané hře.
+ *
+ * @author Jaroslav Kubík
+ * @author Marcel Fiala
+ */
 public class GamesPanel extends JPanel implements ActionListener
 {
     private final JList<String> mazes = new JList<>();

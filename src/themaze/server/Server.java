@@ -10,6 +10,7 @@ import java.util.List;
  * Udržuje seznamy bludišť, her a připojených klientů.
  *
  * @author Jaroslav Kubík
+ * @author Marcel Fiala
  */
 public class Server
 {

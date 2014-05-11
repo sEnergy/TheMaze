@@ -4,6 +4,7 @@ package themaze;
  * Třída reprezentující pozici v bludišti
  *
  * @author Jaroslav Kubík
+ * @author Marcel Fiala
  */
 public class Position
 {

@@ -14,6 +14,7 @@ import java.util.concurrent.*;
  * Třída reprezentující rozehranou hru.
  *
  * @author Jaroslav Kubík
+ * @author Marcel Fiala
  */
 public class Game
 {

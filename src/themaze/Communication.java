@@ -8,6 +8,7 @@ import java.net.Socket;
  * Obsahuje metody pro přijímání a odesílání dat.
  *
  * @author Jaroslav Kubík
+ * @author Marcel Fiala
  */
 public class Communication implements Closeable
 {

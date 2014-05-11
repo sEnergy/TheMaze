@@ -10,6 +10,12 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
 
+/**
+ * Hlavní okno GUI.
+ *
+ * @author Jaroslav Kubík
+ * @author Marcel Fiala
+ */
 public class MainFrame extends JFrame implements ActionListener
 {
     private static MainFrame instance;
@@ -118,6 +124,10 @@ public class MainFrame extends JFrame implements ActionListener
         catch (IOException ex) { disconnect(); }
     }
 
+    /**
+     * Připojení k serveru.
+     * Při úspěšném připojení přepnutí na obrazovku s výběrem her.
+     */
     public void connect(String host, int port)
     {
         try
@@ -133,6 +143,9 @@ public class MainFrame extends JFrame implements ActionListener
         catch (IOException ex) { System.out.println("Connection failed!"); }
     }
 
+    /**
+     * Odpojení od serveru a přepnutí na úvodní obrazovku.
+     */
     public void disconnect()
     {
         if (server != null)
@@ -149,6 +162,9 @@ public class MainFrame extends JFrame implements ActionListener
         pack();
     }
 
+    /**
+     * Přepnutí na obrazovku s bludištěm + nastavení bludiště.
+     */
     public void setMaze(byte color, byte rows, byte columns, byte[] data)
     {
         maze.setMaze(color, rows, columns, data);
@@ -158,7 +174,15 @@ public class MainFrame extends JFrame implements ActionListener
         pack();
     }
 
+    /**
+     * Nastavení seznamu bludišť.
+     */
     public void setMazes(String[] mazes) { games.setMazes(mazes); }
+
+    /**
+     * Nastavení seznamu rozehraných her.
+     * Případně přepnutí z obrazovky bludiště na obrazovku s výběrem her.
+     */
     public void setGames(String[] mazes)
     {
         games.setGames(mazes);

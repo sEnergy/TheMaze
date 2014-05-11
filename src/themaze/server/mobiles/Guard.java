@@ -11,6 +11,7 @@ import java.util.Random;
  * Třída reprezentující hlídače.
  *
  * @author Jaroslav Kubík
+ * @author Marcel Fiala
  */
 public class Guard extends Mobile
 {

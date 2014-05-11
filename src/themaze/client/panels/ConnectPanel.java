@@ -7,6 +7,12 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+/**
+ * Panel obsahující grafické rozhraní pro připojení k serveru.
+ *
+ * @author Jaroslav Kubík
+ * @author Marcel Fiala
+ */
 public class ConnectPanel extends JPanel implements ActionListener
 {
     private final JTextField server = new JTextField("localhost");

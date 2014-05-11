@@ -6,6 +6,13 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.TimeZone;
 
+/**
+ * Třída reprezentující pohybující se objekt v bludišti.
+ * Uchovává informace o pozici, směru, případně o počtu kroků a času pro tooltipy.
+ *
+ * @author Jaroslav Kubík
+ * @author Marcel Fiala
+ */
 public class Mobile
 {
     private Position pos;

@@ -10,6 +10,7 @@ import java.io.IOException;
  * Třída reprezentující hráče.
  *
  * @author Jaroslav Kubík
+ * @author Marcel Fiala
  */
 public class Player extends Mobile
 {

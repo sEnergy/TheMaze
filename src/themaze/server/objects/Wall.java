@@ -4,6 +4,7 @@ package themaze.server.objects;
  * Třída reprezentující zeď.
  *
  * @author Jaroslav Kubík
+ * @author Marcel Fiala
  */
 public class Wall extends MazeObject
 {

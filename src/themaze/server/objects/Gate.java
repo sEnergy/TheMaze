@@ -4,6 +4,7 @@ package themaze.server.objects;
  * Třída reprezentující bránu.
  *
  * @author Jaroslav Kubík
+ * @author Marcel Fiala
  */
 public class Gate extends MazeObject
 {

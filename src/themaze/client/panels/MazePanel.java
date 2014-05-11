@@ -12,6 +12,12 @@ import java.awt.geom.Rectangle2D;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
+/**
+ * Panel vykreslující bludiště.
+ *
+ * @author Jaroslav Kubík
+ * @author Marcel Fiala
+ */
 public class MazePanel extends JPanel implements ActionListener
 {
     private final Map<Integer, Image> images = new HashMap<>();
@@ -50,6 +56,9 @@ public class MazePanel extends JPanel implements ActionListener
 
     public boolean isReady() { return state == GameState.Started; }
 
+    /**
+     * Nastavení parametrů bludiště.
+     */
     public void setMaze(byte color, byte rows, byte columns, byte[] data)
     {
         this.color = color * 10;

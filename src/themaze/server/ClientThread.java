@@ -14,6 +14,7 @@ import java.util.List;
  * Zpracovává požadavky od klienta a obsahuje metody pro odesílání zpráv klientovi.
  *
  * @author Jaroslav Kubík
+ * @author Marcel Fiala
  */
 public class ClientThread extends Thread
 {

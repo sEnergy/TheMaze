@@ -3,6 +3,12 @@ package themaze.client;
 import javax.swing.*;
 import java.io.*;
 
+/**
+ * GUI komponenta, která zobrazuje text posílaný do konzole (System.out.print*).
+ *
+ * @author Jaroslav Kubík
+ * @author Marcel Fiala
+ */
 public class JConsoleOutput extends JScrollPane
 {
     private final JTextArea textArea = new JTextArea();

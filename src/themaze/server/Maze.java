@@ -11,6 +11,7 @@ import java.util.List;
  * Třída reprezentující bludiště ("podklad").
  *
  * @author Jaroslav Kubík
+ * @author Marcel Fiala
  */
 public class Maze
 {
