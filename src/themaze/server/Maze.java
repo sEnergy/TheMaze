@@ -107,7 +107,9 @@ public class Maze
         }
     }
 
-    public MazeObject at(Position position) { return maze[position.row][position.column]; }
+    public MazeObject at(Position position)
+    { return position.isValid() ? maze[position.row][position.column] : null; }
+
     public byte[] toBytes()
     {
         byte[] data = new byte[rows * columns];
