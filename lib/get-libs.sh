@@ -1,1 +1,12 @@
-wget http://www.stud.fit.vutbr.cz/~xfiala47/lib/junit-4.10.jar
+wget http://www.stud.fit.vutbr.cz/~xfiala47/lib/blood.png
+wget http://www.stud.fit.vutbr.cz/~xfiala47/lib/enemy.png
+wget http://www.stud.fit.vutbr.cz/~xfiala47/lib/finish.png
+wget http://www.stud.fit.vutbr.cz/~xfiala47/lib/floor.png
+wget http://www.stud.fit.vutbr.cz/~xfiala47/lib/gate_closed.png
+wget http://www.stud.fit.vutbr.cz/~xfiala47/lib/gate_open.png
+wget http://www.stud.fit.vutbr.cz/~xfiala47/lib/key.png
+wget http://www.stud.fit.vutbr.cz/~xfiala47/lib/pl_1.png
+wget http://www.stud.fit.vutbr.cz/~xfiala47/lib/pl_2.png
+wget http://www.stud.fit.vutbr.cz/~xfiala47/lib/pl_3.png
+wget http://www.stud.fit.vutbr.cz/~xfiala47/lib/pl_4.png
+wget http://www.stud.fit.vutbr.cz/~xfiala47/lib/wall.png

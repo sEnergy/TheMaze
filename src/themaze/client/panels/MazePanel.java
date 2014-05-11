@@ -41,11 +41,13 @@ public class MazePanel extends JPanel implements ActionListener
         images.put(4, new ImageIcon("key.png").getImage());
         images.put(5, new ImageIcon("finish.png").getImage());
 
-        images.put(10, new ImageIcon("pl1.png").getImage());
-        images.put(20, new ImageIcon("pl2.png").getImage());
-        images.put(30, new ImageIcon("pl3.png").getImage());
-        images.put(40, new ImageIcon("pl4.png").getImage());
-        images.put(50, new ImageIcon("guard.png").getImage());
+        images.put(10, new ImageIcon("pl_1.png").getImage());
+        images.put(20, new ImageIcon("pl_2.png").getImage());
+        images.put(30, new ImageIcon("pl_3.png").getImage());
+        images.put(40, new ImageIcon("pl_4.png").getImage());
+        images.put(50, new ImageIcon("enemy.png").getImage());
+
+        images.put(200, new ImageIcon("blood.png").getImage());
 
         setToolTipText("");
         timer.setInitialDelay(0);
@@ -145,6 +147,16 @@ public class MazePanel extends JPanel implements ActionListener
                 g.drawImage(images.get(i), c * 20, r * 20, null);
             }
 
+        for (Map.Entry<Integer, Mobile> corpse : corpses.entrySet())
+        {
+            Mobile mobile = corpse.getValue();
+            int x = mobile.getPosition().column * 20;
+            int y = mobile.getPosition().row * 20;
+            int m = corpse.getKey();
+            g.drawImage(images.get(200), x, y, null);
+            drawCross(g, m, x, y);
+        }
+
         for (Map.Entry<Integer, Mobile> entry : mobiles.entrySet())
         {
             Mobile mobile = entry.getValue();
@@ -158,15 +170,6 @@ public class MazePanel extends JPanel implements ActionListener
             }
             else
                 g.drawImage(images.get(50), x, y, null);
-        }
-
-        for (Map.Entry<Integer, Mobile> corpse : corpses.entrySet())
-        {
-            Mobile mobile = corpse.getValue();
-            int x = mobile.getPosition().column * 20;
-            int y = mobile.getPosition().row * 20;
-            int m = corpse.getKey();
-            drawCross(g, m, x, y);
         }
 
         if (state == GameState.Killed)
@@ -206,12 +209,12 @@ public class MazePanel extends JPanel implements ActionListener
                 g.drawLine(x + 16, y + 2, x + 18, y + 2);
                 break;
             case 30:
-                g.drawLine(x + 17, y + 14, x + 17, y + 18);
-                g.drawLine(x + 16, y + 15, x + 18, y + 15);
-                break;
-            case 40:
                 g.drawLine(x + 2, y + 14, x + 2, y + 18);
                 g.drawLine(x + 1, y + 15, x + 3, y + 15);
+                break;
+            case 40:
+                g.drawLine(x + 17, y + 14, x + 17, y + 18);
+                g.drawLine(x + 16, y + 15, x + 18, y + 15);
                 break;
         }
     }
@@ -234,11 +237,11 @@ public class MazePanel extends JPanel implements ActionListener
             case 10:
                 return Color.RED;
             case 20:
-                return Color.GREEN;
-            case 30:
                 return Color.BLUE;
+            case 30:
+                return Color.GREEN;
             case 40:
-                return Color.CYAN;
+                return Color.YELLOW;
         }
         return null;
     }
