@@ -9,7 +9,7 @@ import javax.swing.Timer;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.geom.Rectangle2D;
-import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 public class MazePanel extends JPanel implements ActionListener
@@ -208,7 +208,7 @@ public class MazePanel extends JPanel implements ActionListener
         if (getParent() != null)
         {
             long diff = System.currentTimeMillis() - start;
-            DateFormat format = DateFormat.getTimeInstance();
+            SimpleDateFormat format = new SimpleDateFormat("HH:mm:ss");
             format.setTimeZone(TimeZone.getTimeZone("UTC"));
             MainFrame.getInstance().setTitle("The Maze - " + format.format(new Date(diff)));
         }
