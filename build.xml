@@ -4,7 +4,7 @@
         <mkdir dir="build"/>
         <javac srcdir="src" destdir="build" includeantruntime="false"/>
         <mkdir dir="doc"/>
-        <javadoc sourcepath="src" destdir="doc"/>
+        <javadoc sourcepath="src" destdir="doc" encoding="UTF-8" charset="UTF-8" docencoding="UTF-8"/>
 
         <mkdir dir="dest-server"/>
         <jar destfile="dest-server/ija2014-server.jar" basedir="build" excludes="**/client/**">
