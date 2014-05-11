@@ -98,11 +98,11 @@ public class Game
         else if (started && winner == null)
         {
             for (Entry<Player, ClientThread> p : players.entrySet())
-            {
                 p.getValue().onChange(player.getPosition(), player.toByte());
+
+            for (Entry<Player, ClientThread> p : players.entrySet())
                 if (p.getKey().isAlive())
                     return;
-            }
             end();
         }
     }

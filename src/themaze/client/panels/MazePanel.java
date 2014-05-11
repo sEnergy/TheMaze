@@ -5,11 +5,15 @@ import themaze.Position.Direction;
 import themaze.client.MainFrame;
 import themaze.client.Mobile;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.Timer;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.geom.Rectangle2D;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -21,7 +25,7 @@ import java.util.*;
  */
 public class MazePanel extends JPanel implements ActionListener
 {
-    private final Map<Integer, Image> images = new HashMap<>();
+    private final Map<Integer, BufferedImage> images = new HashMap<>();
     private final Map<Integer, Mobile> mobiles = new HashMap<>();
     private final Map<Integer, Mobile> corpses = new HashMap<>();
     private final Timer timer = new Timer(1000, this);
@@ -34,20 +38,24 @@ public class MazePanel extends JPanel implements ActionListener
     {
         super();
 
-        images.put(0, new ImageIcon("floor.png").getImage());
-        images.put(1, new ImageIcon("wall.png").getImage());
-        images.put(2, new ImageIcon("gate_closed.png").getImage());
-        images.put(3, new ImageIcon("gate_open.png").getImage());
-        images.put(4, new ImageIcon("key.png").getImage());
-        images.put(5, new ImageIcon("finish.png").getImage());
+        try
+        {
+            images.put(0, ImageIO.read(new File("floor.png")));
+            images.put(1, ImageIO.read(new File("wall.png")));
+            images.put(2, ImageIO.read(new File("gate_closed.png")));
+            images.put(3, ImageIO.read(new File("gate_open.png")));
+            images.put(4, ImageIO.read(new File("key.png")));
+            images.put(5, ImageIO.read(new File("finish.png")));
 
-        images.put(10, new ImageIcon("pl_1.png").getImage());
-        images.put(20, new ImageIcon("pl_2.png").getImage());
-        images.put(30, new ImageIcon("pl_3.png").getImage());
-        images.put(40, new ImageIcon("pl_4.png").getImage());
-        images.put(50, new ImageIcon("enemy.png").getImage());
+            images.put(10, ImageIO.read(new File("pl_1.png")));
+            images.put(20, ImageIO.read(new File("pl_2.png")));
+            images.put(30, ImageIO.read(new File("pl_3.png")));
+            images.put(40, ImageIO.read(new File("pl_4.png")));
+            images.put(50, ImageIO.read(new File("enemy.png")));
 
-        images.put(200, new ImageIcon("blood.png").getImage());
+            images.put(200, ImageIO.read(new File("blood.png")));
+        }
+        catch (IOException ex) { System.err.print(ex.getMessage()); }
 
         setToolTipText("");
         timer.setInitialDelay(0);
@@ -147,13 +155,16 @@ public class MazePanel extends JPanel implements ActionListener
                 g.drawImage(images.get(i), c * 20, r * 20, null);
             }
 
+        boolean blood = false;
         for (Map.Entry<Integer, Mobile> corpse : corpses.entrySet())
         {
             Mobile mobile = corpse.getValue();
             int x = mobile.getPosition().column * 20;
             int y = mobile.getPosition().row * 20;
             int m = corpse.getKey();
-            g.drawImage(images.get(200), x, y, null);
+            if (!blood)
+                g.drawImage(images.get(200), x, y, null);
+            blood = true;
             drawCross(g, m, x, y);
         }
 
@@ -201,20 +212,20 @@ public class MazePanel extends JPanel implements ActionListener
         switch (mobile)
         {
             case 10:
-                g.drawLine(x + 2, y + 1, x + 2, y + 5);
-                g.drawLine(x + 1, y + 2, x + 3, y + 2);
+                g.drawLine(x + 3, y + 1, x + 3, y + 7);
+                g.drawLine(x + 1, y + 3, x + 5, y + 3);
                 break;
             case 20:
-                g.drawLine(x + 17, y + 1, x + 17, y + 5);
-                g.drawLine(x + 16, y + 2, x + 18, y + 2);
+                g.drawLine(x + 16, y + 1, x + 16, y + 7);
+                g.drawLine(x + 14, y + 3, x + 18, y + 3);
                 break;
             case 30:
-                g.drawLine(x + 2, y + 14, x + 2, y + 18);
-                g.drawLine(x + 1, y + 15, x + 3, y + 15);
+                g.drawLine(x + 3, y + 12, x + 3, y + 18);
+                g.drawLine(x + 1, y + 14, x + 5, y + 14);
                 break;
             case 40:
-                g.drawLine(x + 17, y + 14, x + 17, y + 18);
-                g.drawLine(x + 16, y + 15, x + 18, y + 15);
+                g.drawLine(x + 16, y + 12, x + 16, y + 18);
+                g.drawLine(x + 14, y + 14, x + 18, y + 14);
                 break;
         }
     }
@@ -231,20 +242,7 @@ public class MazePanel extends JPanel implements ActionListener
     }
 
     private Color getPlayerColor(int mobile)
-    {
-        switch (mobile)
-        {
-            case 10:
-                return Color.RED;
-            case 20:
-                return Color.BLUE;
-            case 30:
-                return Color.GREEN;
-            case 40:
-                return Color.YELLOW;
-        }
-        return null;
-    }
+    { return new Color(images.get(mobile).getRGB(10, 10)); }
 
     @Override
     public String getToolTipText(MouseEvent event)
