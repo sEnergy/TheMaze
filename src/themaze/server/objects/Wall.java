@@ -1,5 +1,10 @@
 package themaze.server.objects;
 
+/**
+ * Třída reprezentující zeď.
+ *
+ * @author Jaroslav Kubík
+ */
 public class Wall extends MazeObject
 {
     @Override

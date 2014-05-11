@@ -7,6 +7,11 @@ import themaze.server.Game;
 import java.io.IOException;
 import java.util.Random;
 
+/**
+ * Třída reprezentující hlídače.
+ *
+ * @author Jaroslav Kubík
+ */
 public class Guard extends Mobile
 {
     private final int index;

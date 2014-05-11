@@ -10,6 +10,11 @@ import java.util.*;
 import java.util.Map.Entry;
 import java.util.concurrent.*;
 
+/**
+ * Třída reprezentující rozehranou hru.
+ *
+ * @author Jaroslav Kubík
+ */
 public class Game
 {
     private final Maze maze;
@@ -33,6 +38,13 @@ public class Game
             guards.add(new Guard(this, maze.guards.get(i), i));
     }
 
+    /**
+     * Připojení klienta do hry. Vytvoření nového hráče, přiřazení startovní pozice a barvy.
+     * Pokud byl dosáhnut požadovaný počet hráčů hra se odstartuje.
+     *
+     * @param thread klientské vlákno
+     * @throws IOException
+     */
     public synchronized void join(ClientThread thread) throws IOException
     {
         if (colors.isEmpty())
@@ -62,6 +74,16 @@ public class Game
         }
     }
 
+    /**
+     * Opuštění hry.
+     * Pokud hra ještě neběží, tak se zpátky uloží barva hráče a jeho startovní pozice
+     * (aby se mohl připojit někdo jiný).
+     * Pokud hru opouští poslední hráč, hra se ukončuje.
+     *
+     * @param player hráč, který hru opouští
+     * @param color barva hráče
+     * @throws IOException
+     */
     public synchronized void leave(Player player, Color color) throws IOException
     {
         players.remove(player);
@@ -120,6 +142,13 @@ public class Game
         return false;
     }
 
+    /**
+     * Rozešle klientům informace o pohybu objektu (hráč/hlídač).
+     * Zároveň zjišťuje jestli objekt při posunu nezabil nějakého hráče.
+     *
+     * @param mobile objekt, který se pohnul
+     * @throws IOException
+     */
     public synchronized void move(Mobile mobile) throws IOException
     {
         byte data = mobile.toByte();
@@ -133,6 +162,12 @@ public class Game
                 kill(player);
     }
 
+    /**
+     * Zjišťuje jestli se hráč nezabil o hlídače, případně jestli nedošel do cíle.
+     *
+     * @param player hráč, který se pohnul
+     * @throws IOException
+     */
     public synchronized void move(Player player) throws IOException
     {
         for (Guard guard : guards)

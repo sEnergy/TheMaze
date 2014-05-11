@@ -1,5 +1,10 @@
 package themaze;
 
+/**
+ * Třída reprezentující pozici v bludišti
+ *
+ * @author Jaroslav Kubík
+ */
 public class Position
 {
     public static final Position Invalid = new Position(-1, -1);

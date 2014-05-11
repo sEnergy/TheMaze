@@ -1,5 +1,10 @@
 package themaze.server.objects;
 
+/**
+ * Třída reprezentující bránu.
+ *
+ * @author Jaroslav Kubík
+ */
 public class Gate extends MazeObject
 {
     private boolean open = false;

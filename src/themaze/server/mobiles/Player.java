@@ -6,6 +6,11 @@ import themaze.server.Game;
 
 import java.io.IOException;
 
+/**
+ * Třída reprezentující hráče.
+ *
+ * @author Jaroslav Kubík
+ */
 public class Player extends Mobile
 {
     private final Color color;
@@ -48,6 +53,13 @@ public class Player extends Mobile
         }
     }
 
+    /**
+     * Pokus o sebrání klíče před hráčem.
+     * @return -1 = hráč je mrtvý
+     *          0 = úspěch
+     *          1 = neúspěch
+     * @throws IOException
+     */
     public byte take() throws IOException
     {
         synchronized (game)
@@ -64,6 +76,14 @@ public class Player extends Mobile
         }
     }
 
+    /**
+     * Pokus o otevření brány před hráčem.
+     * @return -1 = hráč je mrtvý
+     *          0 = úspěch
+     *          1 = hráč nemá klíče
+     *          2 = před hrářem není brána
+     * @throws IOException
+     */
     public byte open() throws IOException
     {
         synchronized (game)

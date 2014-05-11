@@ -1,5 +1,10 @@
 package themaze.server.objects;
 
+/**
+ * Třída reprezentující cíl.
+ *
+ * @author Jaroslav Kubík
+ */
 public class Finish extends MazeObject
 {
     @Override

@@ -7,6 +7,11 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Třída reprezentující bludiště ("podklad").
+ *
+ * @author Jaroslav Kubík
+ */
 public class Maze
 {
     public final byte rows, columns;
@@ -15,6 +20,10 @@ public class Maze
     private final String name;
     private final MazeObject[][] maze;
 
+    /**
+     * Vytvoří kopii bludiště.
+     * @param m bludiště ke zkopírování
+     */
     public Maze(Maze m)
     {
         this.rows = m.rows;
@@ -60,6 +69,7 @@ public class Maze
 
     private MazeObject cloneObject(MazeObject object)
     {
+        //Gate a Key se mohou změnit -> je potřeba při kopírování vytvářet nové instance
         if (object instanceof Gate)
             return new Gate();
         if (object instanceof Key)

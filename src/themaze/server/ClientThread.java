@@ -9,6 +9,12 @@ import java.io.IOException;
 import java.net.Socket;
 import java.util.List;
 
+/**
+ * Vlákno pro jednoho připojeného klienta.
+ * Zpracovává požadavky od klienta a obsahuje metody pro odesílání zpráv klientovi.
+ *
+ * @author Jaroslav Kubík
+ */
 public class ClientThread extends Thread
 {
     private final Communication comm;

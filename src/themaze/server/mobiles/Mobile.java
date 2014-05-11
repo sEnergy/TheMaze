@@ -7,6 +7,13 @@ import themaze.server.Game;
 import java.io.IOException;
 import java.util.concurrent.ScheduledFuture;
 
+/**
+ * Abstraktní třída pro pohybující se objekty v bludišti.
+ * Obsahuje pozici, směr otočení, hru ve které se objekt nachází,
+ * počet ušlých kroků a operace pro pohyb.
+ *
+ * @author Jaroslav Kubík
+ */
 public abstract class Mobile implements Runnable
 {
     protected final Game game;

@@ -1,5 +1,10 @@
 package themaze.server.objects;
 
+/**
+ * Třída reprezentující klíč.
+ *
+ * @author Jaroslav Kubík
+ */
 public class Key extends MazeObject
 {
     private boolean taken = false;

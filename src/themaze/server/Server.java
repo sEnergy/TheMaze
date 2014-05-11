@@ -5,6 +5,12 @@ import java.net.ServerSocket;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Statická třídá, obsahuje vstupní bod programu.
+ * Udržuje seznamy bludišť, her a připojených klientů.
+ *
+ * @author Jaroslav Kubík
+ */
 public class Server
 {
     private static final List<Maze> mazes = new ArrayList<>();

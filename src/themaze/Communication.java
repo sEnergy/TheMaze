@@ -3,6 +3,12 @@ package themaze;
 import java.io.*;
 import java.net.Socket;
 
+/**
+ * Třída řešící komunikaci mezi serverem a klientem.
+ * Obsahuje metody pro přijímání a odesílání dat.
+ *
+ * @author Jaroslav Kubík
+ */
 public class Communication implements Closeable
 {
     private final Socket socket;
@@ -81,9 +87,9 @@ public class Communication implements Closeable
         //              S->C                                                C->S
         Game,   //      byte size, str[] names                              byte id, byte players, byte speed
         Join,   //      byte size, str[] names                              byte id
-        Maze,   //      byte rows, byte columns, byte[] maze                ----------
-        Change, //      byte row, column, data                              ----------
-        Info,   //      byte data, int steps                                ----------
+        Maze,   //      byte playerColor, rows, byte columns, byte[] maze   ----------
+        Change, //      byte row, column, data (invalid position = remove)  ----------
+        Info,   //      byte data (negative = dead), int steps              ----------
         Close,  //      byte winner (0 = start)
         Keys,   //      byte keys
         Take,   //      byte 0/1 (success/fail)
@@ -93,5 +99,20 @@ public class Communication implements Closeable
         Stop,   //
         Left,   //
         Right   //
+        /*
+            data            object
+
+            0               empty
+            1               wall
+            2               gate - closed
+            3               gate - opened
+            4               key
+            5               finish
+
+            1x/2x/3x/4x     players (1-4)
+            x = direction (0 up, 1 right, 2 down, 3 left)
+
+            50 to 127       guards
+         */
     }
 }
